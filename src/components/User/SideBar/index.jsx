@@ -174,7 +174,7 @@ const SideBar = () => {
                 marginTop: "20px",
               }}
             >
-              <li
+              <Link to='/user'
                 style={{
                   display: "flex",
                   alignItems: "center",
@@ -184,11 +184,11 @@ const SideBar = () => {
               >
                 <span>{user.followers ? user.followers.length : 0}</span>
                 <span>Followers</span>
-              </li>
+              </Link>
 
               <li style={{ fontSize: "40px", fontWeight: "lighter" }}>|</li>
 
-              <li
+              <Link to='/user'
                 style={{
                   display: "flex",
                   alignItems: "center",
@@ -198,11 +198,11 @@ const SideBar = () => {
               >
                 <span>{user.followings ? user.followings.length : 0}</span>
                 <span>Following</span>
-              </li>
+              </Link>
 
               <li style={{ fontSize: "40px", fontWeight: "lighter" }}>|</li>
 
-              <li
+              <Link to="/user"
                 style={{
                   display: "flex",
                   alignItems: "center",
@@ -212,7 +212,7 @@ const SideBar = () => {
               >
                 <span>{user.posts ? user.posts.length : 0}</span>
                 <span>Posts</span>
-              </li>
+              </Link>
             </ul>
 
             <div style={{ marginTop: "10px" }}>

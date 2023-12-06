@@ -48,6 +48,10 @@ const Login = () => {
       setUsers(fetchedUsers);
     }
     fetchData();
+
+    if(localStorage.getItem('user')){
+      navigate('feed')
+    }
   }, []);
 
   const {

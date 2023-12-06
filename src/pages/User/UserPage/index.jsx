@@ -43,18 +43,31 @@ const UserPage = () => {
 
   useEffect(() => {
     setUser(user);
-  }, [setUser]);
+  }, [setUser, putUser]);
 
   const formik = useFormik({
     initialValues: {
-      id: Date.now().toString(),
       imageLink: "",
       messageText: "",
     },
-    onSubmit: (values) => {
-      // const newPost = user.posts.push(values);
-      // putUser(user.id, newPost);
-      // console.log(user);
+    onSubmit: async (values) => {
+      const newPost = {
+        id: Date.now().toString(),
+        imageLink: values.imageLink,
+        messageText: values.messageText,
+        likes: [],
+        comments: [],
+      };
+
+      setUser((prevUser) => ({
+        ...prevUser,
+        posts: [...prevUser.posts, newPost],
+      }));
+    
+      await putUser(user.id, { posts: [...user.posts, newPost] });
+      console.log(user.posts);
+
+      formik.resetForm();
     },
   });
 
@@ -173,338 +186,110 @@ const UserPage = () => {
 
                   <div>
                     <Grid container spacing={2}>
-                      <Grid item xs={3}>
-                        <Item
-                          style={{
-                            backgroundImage:
-                              "url(https://images.pexels.com/photos/4819296/pexels-photo-4819296.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=1)",
-                          }}
-                        >
-                          <div>
-                            <div>
-                              <Typography
-                                style={{
-                                  display: "flex",
-                                  alignItems: "center",
-                                  gap: "10px",
-                                }}
-                                component="h1"
-                                variant="h6"
-                              >
-                                <Avatar
-                                  src={user.profilePicture}
-                                  style={{
-                                    height: "50px",
-                                    width: "50px",
-                                    marginBottom: "10px",
-                                  }}
-                                />
-                                <span
-                                  style={{ fontWeight: "700", color: "pink" }}
-                                >
-                                  {user.username}
-                                </span>
-                              </Typography>
-
-                              <div style={{ height: "300px" }}></div>
-
-                              <div
-                                style={{
-                                  display: "flex",
-                                  justifyContent: "flex-end",
-                                  alignItems: "center",
-                                  gap: "10px",
-                                }}
-                              >
-                                <span
-                                  style={{
-                                    color: "pink",
-                                    fontWeight: "bolder",
-                                  }}
-                                >
-                                  13
-                                </span>
-                                <Favorite />
-                              </div>
-                            </div>
-                          </div>
-                        </Item>
-                      </Grid>
-
-                      <Grid item xs={3}>
-                        <Item
-                          style={{
-                            backgroundImage:
-                              "url(https://images.pexels.com/photos/4947386/pexels-photo-4947386.jpeg?auto=compress&cs=tinysrgb&w=600&lazy=load)",
-                          }}
-                        >
-                          <div>
-                            <div>
-                              <Typography
-                                style={{
-                                  display: "flex",
-                                  alignItems: "center",
-                                  gap: "10px",
-                                }}
-                                component="h1"
-                                variant="h6"
-                              >
-                                <Avatar
-                                  src={user.profilePicture}
-                                  style={{
-                                    height: "50px",
-                                    width: "50px",
-                                    marginBottom: "10px",
-                                  }}
-                                />
-                                <span
-                                  style={{ fontWeight: "700", color: "pink" }}
-                                >
-                                  {user.username}
-                                </span>
-                              </Typography>
-
-                              <div style={{ height: "300px" }}></div>
-
-                              <div
-                                style={{
-                                  display: "flex",
-                                  justifyContent: "flex-end",
-                                  alignItems: "center",
-                                  gap: "10px",
-                                }}
-                              >
-                                <span
-                                  style={{
-                                    color: "pink",
-                                    fontWeight: "bolder",
-                                  }}
-                                >
-                                  13
-                                </span>
-                                <Favorite />
-                              </div>
-                            </div>
-                          </div>
-                        </Item>
-                      </Grid>
-
-                      <Grid item xs={3}>
-                        <Item
-                          style={{
-                            backgroundImage:
-                              "url(https://images.pexels.com/photos/7421220/pexels-photo-7421220.jpeg?auto=compress&cs=tinysrgb&w=600&lazy=load)",
-                          }}
-                        >
-                          <div>
-                            <div>
-                              <Typography
-                                style={{
-                                  display: "flex",
-                                  alignItems: "center",
-                                  gap: "10px",
-                                }}
-                                component="h1"
-                                variant="h6"
-                              >
-                                <Avatar
-                                  src={user.profilePicture}
-                                  style={{
-                                    height: "50px",
-                                    width: "50px",
-                                    marginBottom: "10px",
-                                  }}
-                                />
-                                <span
-                                  style={{ fontWeight: "700", color: "pink" }}
-                                >
-                                  {user.username}
-                                </span>
-                              </Typography>
-
-                              <div style={{ height: "300px" }}></div>
-
-                              <div
-                                style={{
-                                  display: "flex",
-                                  justifyContent: "flex-end",
-                                  alignItems: "center",
-                                  gap: "10px",
-                                }}
-                              >
-                                <span
-                                  style={{
-                                    color: "pink",
-                                    fontWeight: "bolder",
-                                  }}
-                                >
-                                  13
-                                </span>
-                                <Favorite style={{ fill: "red" }} />
-                              </div>
-                            </div>
-                          </div>
-                        </Item>
-                      </Grid>
-
-                      <Grid item xs={3}>
-                        <Item
-                          style={{
-                            backgroundImage:
-                              "url(https://images.pexels.com/photos/5490216/pexels-photo-5490216.jpeg?auto=compress&cs=tinysrgb&w=600&lazy=load)",
-                          }}
-                        >
-                          <div>
-                            <div>
-                              <Typography
-                                style={{
-                                  display: "flex",
-                                  alignItems: "center",
-                                  gap: "10px",
-                                }}
-                                component="h1"
-                                variant="h6"
-                              >
-                                <Avatar
-                                  src={user.profilePicture}
-                                  style={{
-                                    height: "50px",
-                                    width: "50px",
-                                    marginBottom: "10px",
-                                  }}
-                                />
-                                <span
-                                  style={{ fontWeight: "700", color: "pink" }}
-                                >
-                                  {user.username}
-                                </span>
-                              </Typography>
-
-                              <div style={{ height: "300px" }}></div>
-
-                              <div
-                                style={{
-                                  display: "flex",
-                                  justifyContent: "flex-end",
-                                  alignItems: "center",
-                                  gap: "10px",
-                                }}
-                              >
-                                <span
-                                  style={{
-                                    color: "pink",
-                                    fontWeight: "bolder",
-                                  }}
-                                >
-                                  13
-                                </span>
-                                <Favorite style={{ fill: "red" }} />
-                              </div>
-                            </div>
-                          </div>
-                        </Item>
-                      </Grid>
-
-                      <Grid item xs={3}>
-                        <Item
-                          style={{
-                            backgroundImage:
-                              "url(https://images.pexels.com/photos/4947110/pexels-photo-4947110.jpeg?auto=compress&cs=tinysrgb&w=600&lazy=load)",
-                          }}
-                        >
-                          <div>
-                            <div>
-                              <Typography
-                                style={{
-                                  display: "flex",
-                                  alignItems: "center",
-                                  gap: "10px",
-                                }}
-                                component="h1"
-                                variant="h6"
-                              >
-                                <Avatar
-                                  src={user.profilePicture}
-                                  style={{
-                                    height: "50px",
-                                    width: "50px",
-                                    marginBottom: "10px",
-                                  }}
-                                />
-                                <span
-                                  style={{ fontWeight: "700", color: "pink" }}
-                                >
-                                  {user.username}
-                                </span>
-                              </Typography>
-
-                              <div style={{ height: "300px" }}></div>
-
-                              <div
-                                style={{
-                                  display: "flex",
-                                  justifyContent: "space-between",
-                                  alignItems: "center",
-                                  gap: "10px",
-                                  backgroundColor: "rgba(255, 255, 255, 0.5)",
-                                }}
-                              >
-                                <div
-                                  style={{
-                                    display: "flex",
-                                    alignItems: "center",
-                                    padding: "10px 20px",
-                                  }}
-                                >
-                                  <span>this is post text</span>
-                                </div>
-                                <div
-                                  style={{
-                                    display: "flex",
-                                    alignItems: "center",
-                                    padding: "10px 20px",
-                                    gap: "10px",
-                                  }}
-                                >
-                                  <span
-                                    style={{
-                                      display: "flex",
-                                      alignItems: "center",
-                                    }}
-                                  >
-                                    <span
+                      {user.posts &&
+                        user.posts.map((post, id) => {
+                          return (
+                            <Grid key={post.id} item xs={3}>
+                              <Item style={{ backgroundImage: `url('${post.imageLink}')` }}>
+                                <div>
+                                  <div>
+                                    <Typography
                                       style={{
-                                        color: "pink",
-                                        fontWeight: "bolder",
+                                        display: "flex",
+                                        alignItems: "center",
+                                        gap: "10px",
+                                      }}
+                                      component="h1"
+                                      variant="h6"
+                                    >
+                                      <Avatar
+                                        src={user.profilePicture}
+                                        style={{
+                                          height: "50px",
+                                          width: "50px",
+                                          marginBottom: "10px",
+                                        }}
+                                      />
+                                      <span
+                                        style={{
+                                          fontWeight: "700",
+                                          color: "pink",
+                                        }}
+                                      >
+                                        {user.username}
+                                      </span>
+                                    </Typography>
+
+                                    <div style={{ height: "300px" }}></div>
+
+                                    <div
+                                      style={{
+                                        display: "flex",
+                                        justifyContent: "space-between",
+                                        alignItems: "center",
+                                        gap: "10px",
+                                        backgroundColor:
+                                          "rgba(255, 255, 255, 0.5)",
                                       }}
                                     >
-                                      13
-                                    </span>
-                                    <ModeCommentIcon />
-                                  </span>
+                                      <div
+                                        style={{
+                                          display: "flex",
+                                          alignItems: "center",
+                                          padding: "10px 20px",
+                                        }}
+                                      >
+                                        <span>{post.messageText}</span>
+                                      </div>
+                                      <div
+                                        style={{
+                                          display: "flex",
+                                          alignItems: "center",
+                                          padding: "10px 20px",
+                                          gap: "10px",
+                                        }}
+                                      >
+                                        <span
+                                          style={{
+                                            display: "flex",
+                                            alignItems: "center",
+                                          }}
+                                        >
+                                          <span
+                                            style={{
+                                              color: "pink",
+                                              fontWeight: "bolder",
+                                            }}
+                                          >
+                                            {post.comments.length}
+                                          </span>
+                                          <ModeCommentIcon />
+                                        </span>
 
-                                  <span
-                                    style={{
-                                      display: "flex",
-                                      alignItems: "center",
-                                    }}
-                                  >
-                                    <span
-                                      style={{
-                                        color: "pink",
-                                        fontWeight: "bolder",
-                                      }}
-                                    >
-                                      13
-                                    </span>
-                                    <Favorite />
-                                  </span>
+                                        <span
+                                          style={{
+                                            display: "flex",
+                                            alignItems: "center",
+                                          }}
+                                        >
+                                          <span
+                                            style={{
+                                              color: "pink",
+                                              fontWeight: "bolder",
+                                            }}
+                                          >
+                                            {post.likes.length}
+                                          </span>
+                                          <Favorite />
+                                        </span>
+                                      </div>
+                                    </div>
+                                  </div>
                                 </div>
-                              </div>
-                            </div>
-                          </div>
-                        </Item>
-                      </Grid>
+                              </Item>
+                            </Grid>
+                          );
+                        })}
                     </Grid>
                   </div>
                 </div>

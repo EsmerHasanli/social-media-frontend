@@ -1,4 +1,4 @@
-import React, { useContext, useEffect } from "react";
+import React, { useContext, useEffect, useState } from "react";
 import { UserContext } from "../../../services/context/UserContext";
 import { getAllUsers } from "../../../services/api/users";
 import CssBaseline from "@mui/material/CssBaseline";
@@ -27,6 +27,7 @@ const Feed = () => {
 
   const navigate = useNavigate();
   const { user, setUser } = useContext(UserContext);
+  const [users, setUsers] = useState([])
   useEffect(() => {
     if (user === null) {
       navigate("/");
@@ -35,10 +36,14 @@ const Feed = () => {
       if (user) {
         let currentUser = JSON.parse(localStorage.getItem("user"));
         let allUsers = await getAllUsers();
-        setUser(allUsers);
-        user.find((obj) => {
+        console.log(allUsers);
+        setUsers(allUsers);
+        console.log(users);
+        
+        users.find((obj) => {
           obj.email === currentUser.email;
           setUser(obj);
+          console.log(user);
         });
       }
     }

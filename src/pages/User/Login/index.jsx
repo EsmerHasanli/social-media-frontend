@@ -37,7 +37,7 @@ function Copyright(props) {
 const defaultTheme = createTheme();
 
 const Login = () => {
-  const { setUser } = React.useContext(UserContext);
+  const { user, setUser } = React.useContext(UserContext);
   const [users, setUsers] = React.useState([]);
   const dispatch = useDispatch();
   const navigate = useNavigate();
@@ -118,21 +118,21 @@ const Login = () => {
               alignItems: "center",
             }}
           >
-              <Avatar
-                style={{ height: "70px", width: "70px", marginBottom: "10px" }}
-                src="https://cdn.logojoy.com/wp-content/uploads/20220329171603/dating-app-logo-example.jpg"
-              />
-              <Typography
-                style={{
-                  marginBottom: "20px",
-                  display: "flex",
-                  alignItems: "center",
-                }}
-                component="h1"
-                variant="h4"
-              >
-                Sociala
-              </Typography>
+            <Avatar
+              style={{ height: "70px", width: "70px", marginBottom: "10px" }}
+              src="https://cdn.logojoy.com/wp-content/uploads/20220329171603/dating-app-logo-example.jpg"
+            />
+            <Typography
+              style={{
+                marginBottom: "20px",
+                display: "flex",
+                alignItems: "center",
+              }}
+              component="h1"
+              variant="h4"
+            >
+              Sociala
+            </Typography>
             <Typography component="h1" variant="h5">
               Sign in
             </Typography>

@@ -9,7 +9,7 @@ import Box from "@mui/material/Box";
 import Grid from "@mui/material/Grid";
 import Typography from "@mui/material/Typography";
 import { createTheme, ThemeProvider } from "@mui/material/styles";
-import { postUser } from "../../../services/api/users";
+import { getAllUsers, postUser } from "../../../services/api/users";
 import registerSchema from "../../../validation/registerSchema.js";
 import { Link, useNavigate } from "react-router-dom";
 import { Checkbox, FormControlLabel } from "@mui/material";
@@ -18,6 +18,15 @@ const defaultTheme = createTheme();
 
 const Register = () => {
   const navigate = useNavigate();
+const [users, setUsers] = React.useState([])
+
+  React.useEffect(()=>{
+    async function fetchData(){
+      let fetchedUsers = await getAllUsers();
+      setUsers(fetchedUsers)
+    }
+    fetchData()
+  },[])
 
   const {
     handleSubmit,
@@ -46,10 +55,25 @@ const Register = () => {
       isPublic: true,
     },
     onSubmit: async (values, actions) => {
+      console.log(values);
       try {
-        postUser(values);
-        actions.resetForm();
-        navigate("/");
+        let userExists
+
+        users.map((user)=>{
+          if(values.email == user.email || values.username == user.username){
+            userExists =user;
+          }
+        })
+  
+        if (userExists) {
+          actions.setFieldError("email", "Username or email already exists");
+          actions.setFieldError("username", "Username or email already exists");
+
+        } else {
+          postUser(values);
+          actions.resetForm();
+          navigate("/");
+        }
       } catch (error) {
         console.error(error);
       }
@@ -236,7 +260,7 @@ const Register = () => {
                 <br />
                 <br />
 
-                <Link to="/login" variant="body2">
+                <Link to="/" variant="body2">
                   {"Already have an account? Sign in"}
                 </Link>
 

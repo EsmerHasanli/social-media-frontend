@@ -3,9 +3,10 @@ import Register from "../pages/User/Register";
 import UserRoot from "../pages/User/UserRoot";
 import AdminRoot from "../pages/Admin/AdminRoot";
 import AdminLogin from "../pages/Admin/Login";
-import UserPage from "../pages/User/UserPage";
 import UsersPage from "../pages/Admin/UsersPage";
-import FeedPage from "../pages/User/FeedPage";
+import Feed from "../pages/User/Feed";
+import UserPage from "../pages/User/UserPage";
+
 
 export const ROUTES = [
   {
@@ -22,7 +23,7 @@ export const ROUTES = [
       },
       {
         path: "feed",
-        element: <FeedPage />,
+        element: <Feed/>,
       },
       {
         path: "user",

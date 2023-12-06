@@ -75,25 +75,21 @@ const SideBar = () => {
   });
 
   useEffect(() => {
-    async function fetchUsers() {
-      const fetch = await getAllUsers();
-      setUsers(fetch);
+    if (user === null) {
+      navigate("/");
     }
-    fetchUsers();
-  }, []);
+    async function findUser() {
+      if (user) {
+        let allUsers = await getAllUsers();
 
-  useEffect(() => {
-    users.map((obj) => {
-      if (obj.email == user.email) {
-        const findedUser = obj;
+        const findedUser = allUsers.find((obj) => {
+          return obj.email == user.email;
+        });
         setUser(findedUser);
       }
-    });
-  }, [user]);
-
-  useEffect(()=>{
-    setUser(user);
-  },[setUser])
+    }
+    findUser();
+  }, []);
 
   return (
     <>

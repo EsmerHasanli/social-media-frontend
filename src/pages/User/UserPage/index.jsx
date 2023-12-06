@@ -23,27 +23,12 @@ const defaultTheme = createTheme();
 const UserPage = () => {
   const navigate = useNavigate();
   const { user, setUser } = useContext(UserContext);
+
   useEffect(() => {
     if (user === null) {
       navigate("/");
     }
-    async function findUser() {
-      if (user) {
-        let currentUser = JSON.parse(localStorage.getItem("user"));
-        let allUsers = await getAllUsers();
-        setUser(allUsers);
-        user.find((obj) => {
-          obj.email === currentUser.email;
-          setUser(obj);
-        });
-      }
-    }
-    findUser();
   }, []);
-
-  useEffect(() => {
-    setUser(user);
-  }, [setUser, putUser]);
 
   const formik = useFormik({
     initialValues: {

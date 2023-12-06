@@ -27,27 +27,11 @@ const Feed = () => {
 
   const navigate = useNavigate();
   const { user, setUser } = useContext(UserContext);
-  const [users, setUsers] = useState([])
+  
   useEffect(() => {
     if (user === null) {
       navigate("/");
     }
-    async function findUser() {
-      if (user) {
-        let currentUser = JSON.parse(localStorage.getItem("user"));
-        let allUsers = await getAllUsers();
-        console.log(allUsers);
-        setUsers(allUsers);
-        console.log(users);
-        
-        users.find((obj) => {
-          obj.email === currentUser.email;
-          setUser(obj);
-          console.log(user);
-        });
-      }
-    }
-    findUser();
   }, []);
 
   return (

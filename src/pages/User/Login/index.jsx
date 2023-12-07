@@ -49,8 +49,8 @@ const Login = () => {
     }
     fetchData();
 
-    if(localStorage.getItem('user')){
-      navigate('feed')
+    if (localStorage.getItem("user")) {
+      navigate("feed");
     }
   }, []);
 
@@ -100,18 +100,22 @@ const Login = () => {
           xs={false}
           sm={4}
           md={7}
+          component="video"
+          autoPlay
+          loop
+          muted
+          playsInline
           sx={{
-            backgroundImage:
-              "url(https://media.istockphoto.com/id/1357830750/vector/geometric-illustration-of-multi-coloured-human-figures.jpg?s=2048x2048&w=is&k=20&c=asQO7QSoqPvRGP2xc06s4wtXK7Un0xJTcZVsFQSCmPA=)",
-            backgroundRepeat: "no-repeat",
-            backgroundColor: (t) =>
-              t.palette.mode === "light"
-                ? t.palette.grey[50]
-                : t.palette.grey[900],
-            backgroundSize: "cover",
-            backgroundPosition: "center",
+            width: "100%",
+            height: "100%",
+            objectFit: "cover",
           }}
-        />
+        >
+          <source
+            src="https://cdn.dribbble.com/userupload/7936453/file/original-80071a533bd3c78d18f93bf70c273d1a.mp4"
+            type="video/mp4"
+          />
+        </Grid>
         <Grid item xs={12} sm={8} md={5} component={Paper} elevation={6} square>
           <Box
             sx={{

@@ -87,22 +87,26 @@ const [users, setUsers] = React.useState([])
         <Grid container component="main" sx={{ height: "100vh" }}>
           <CssBaseline />
           <Grid
-            item
-            xs={false}
-            sm={4}
-            md={7}
-            sx={{
-              backgroundImage:
-                "url(https://media.istockphoto.com/id/1357830750/vector/geometric-illustration-of-multi-coloured-human-figures.jpg?s=2048x2048&w=is&k=20&c=asQO7QSoqPvRGP2xc06s4wtXK7Un0xJTcZVsFQSCmPA=)",
-              backgroundRepeat: "no-repeat",
-              backgroundColor: (t) =>
-                t.palette.mode === "light"
-                  ? t.palette.grey[50]
-                  : t.palette.grey[900],
-              backgroundSize: "cover",
-              backgroundPosition: "center",
-            }}
+          item
+          xs={false}
+          sm={4}
+          md={7}
+          component="video"
+          autoPlay
+          loop
+          muted
+          playsInline
+          sx={{
+            width: "100%",
+            height: "110%",
+            objectFit: "cover",
+          }}
+        >
+          <source
+            src="https://cdn.dribbble.com/userupload/7936453/file/original-80071a533bd3c78d18f93bf70c273d1a.mp4" 
+            type="video/mp4"
           />
+        </Grid>
           <Grid
             item
             xs={12}

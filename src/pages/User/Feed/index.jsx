@@ -88,6 +88,7 @@ const Feed = () => {
 
                     setSearchedUser(filteredUsers);
                   }}
+                  //autocomplete="off"
                 />
 
                 {searchedUser.length > 0 && (

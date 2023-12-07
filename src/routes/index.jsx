@@ -6,6 +6,7 @@ import AdminLogin from "../pages/Admin/Login";
 import UsersPage from "../pages/Admin/UsersPage";
 import Feed from "../pages/User/Feed";
 import UserPage from "../pages/User/UserPage";
+import UserProfile from "../pages/User/UserProfile";
 
 
 export const ROUTES = [
@@ -29,6 +30,10 @@ export const ROUTES = [
         path: "user",
         element: <UserPage />,
       },
+      {
+        path:'test',
+        element:<UserProfile/>
+      }
     ],
   },
   {

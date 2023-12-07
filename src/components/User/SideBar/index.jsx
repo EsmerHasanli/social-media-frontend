@@ -21,7 +21,6 @@ import { useFormik } from "formik";
 import editSchema from "../../../validation/editSchema";
 import Swal from "sweetalert2";
 
-
 const style = {
   position: "absolute",
   top: "50%",
@@ -64,12 +63,13 @@ const SideBar = () => {
       confirmPassword: "",
       currentPassword: "",
       newPassword: "",
-      changeConfidence: false
+      changeConfidence: user.isPublic,
     },
     validationSchema: editSchema,
     onSubmit: (values) => {
-      putUser(user.id,{ ...values });
-      setUser(values)
+      user.isPublic = values.changeConfidence
+      putUser(user.id, { ...values });
+      setUser(values);
       handleClose();
     },
   });
@@ -170,7 +170,8 @@ const SideBar = () => {
                 marginTop: "20px",
               }}
             >
-              <Link to='/user'
+              <Link
+                to="/user"
                 style={{
                   display: "flex",
                   alignItems: "center",
@@ -184,7 +185,8 @@ const SideBar = () => {
 
               <li style={{ fontSize: "40px", fontWeight: "lighter" }}>|</li>
 
-              <Link to='/user'
+              <Link
+                to="/user"
                 style={{
                   display: "flex",
                   alignItems: "center",
@@ -198,7 +200,8 @@ const SideBar = () => {
 
               <li style={{ fontSize: "40px", fontWeight: "lighter" }}>|</li>
 
-              <Link to="/user"
+              <Link
+                to="/user"
                 style={{
                   display: "flex",
                   alignItems: "center",
@@ -393,7 +396,6 @@ const SideBar = () => {
                 <Button
                   style={{ marginTop: "30px" }}
                   onClick={() => {
-                    dispatch(sign_out());
                     Swal.fire({
                       title: "Are you sure to logout?",
                       icon: "warning",
@@ -402,8 +404,9 @@ const SideBar = () => {
                       cancelButtonColor: "#d33",
                       confirmButtonText: "Yes, log out!",
                     }).then((result) => {
-                      setUser(null);
                       if (result.isConfirmed) {
+                        dispatch(sign_out());
+                        setUser(null);
                         Swal.fire({
                           title: "Logged Out!",
                           icon: "success",

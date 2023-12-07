@@ -21,7 +21,7 @@ const defaultTheme = createTheme();
 const Feed = () => {
   const navigate = useNavigate();
   const { user, setUser } = useContext(UserContext);
-  const [searchedUser, setSearchedUser] = useState({});
+  const [searchedUser, setSearchedUser] = useState([]);
 
   useEffect(() => {
     if (user === null) {
@@ -73,49 +73,85 @@ const Feed = () => {
                   id="filled-basic"
                   label="search"
                   variant="filled"
-                  onChange={async (e) => {
+                  onFocus={async () => {
                     const users = await getAllUsers();
-                    users.map((obj) => {
-                      if (obj.username.includes(e.target.value)) {
-                        setSearchedUser(obj);
-                        console.log(searchedUser);
-                      }
-                    });
+                    setSearchedUser(users);
+                  }}
+                  onBlur={() => setSearchedUser([])}
+                  onChange={async (e) => {
+                    const searchQuery = e.target.value;
+                    const users = await getAllUsers();
+
+                    const filteredUsers = users.filter((obj) =>
+                      obj.username.includes(searchQuery)
+                    );
+
+                    setSearchedUser(filteredUsers);
                   }}
                 />
 
-                {searchedUser && (
+                {searchedUser.length > 0 && (
                   <ul
+                    onClick={(e) => {
+                      e.stopPropagation();
+                    }}
                     style={{
                       position: "absolute",
                       top: "106px",
                       width: "24.5%",
+                      height: "200px",
+                      overflow: "auto",
+                      zIndex:3
                     }}
                   >
-                    <li
-                      style={{
-                        display: "flex",
-                        justifyContent: "space-between",
-                        alignItems: "center",
-                        padding: "5px 10px ",
-                      }}
-                    >
-                      <span
-                        style={{
-                          display: "flex",
-                          alignItems: "center",
-                          gap:'10px'
-                        }}
-                      >
-                        <Avatar src={searchedUser.profilePicture} />
-                        {searchedUser.username}
-                      </span>
+                    {searchedUser.map((x) =>
+                      x.username !== user.username && x.username !== "admin" ? (
+                        <li
+                          key={x.id}
+                          style={{
+                            display: "flex",
+                            justifyContent: "space-between",
+                            alignItems: "center",
+                            padding: "5px 10px ",
+                            cursor: "pointer",
+                          }}
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            console.log(x.id);
+                            x.requests.push({
+                              userId: x.id,
+                              id: Date.now().toString(),
+                            });
+                            // setSearchedUser([]);
+                          }}
+                        >
+                          <span
+                            style={{
+                              display: "flex",
+                              alignItems: "center",
+                              gap: "10px",
+                            }}
+                          >
+                            <Avatar src={x.profilePicture} />
+                            {x.username}
+                          </span>
 
-                      <Button onClick={()=>{
-                        console.log(searchedUser.id)
-                        searchedUser.requests.push({userId: user.id, id :Date.now().toString()})
-                      }}>follow</Button>
-                    </li>
+                          <Button
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              console.log(x.id);
+                              x.requests.push({
+                                userId: x.id,
+                                id: Date.now().toString(),
+                              });
+                              // setSearchedUser([]);
+                            }}
+                          >
+                            follow
+                          </Button>
+                        </li>
+                      ) : null
+                    )}
                   </ul>
                 )}
               </div>

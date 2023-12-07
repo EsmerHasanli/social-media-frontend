@@ -1,4 +1,4 @@
-import React, { useContext, useEffect ,useState } from "react";
+import React, { useContext, useEffect, useState } from "react";
 import { UserContext } from "../../../services/context/UserContext";
 import { getAllUsers, putUser } from "../../../services/api/users";
 import CssBaseline from "@mui/material/CssBaseline";
@@ -21,14 +21,10 @@ const Item = styled(Paper)(({ theme }) => ({
 
 const defaultTheme = createTheme();
 
-// const [ expandMore, setExpandMore ] = useState(false)
-// const handleOpenExpandMore = () => {
-//   setExpandMore(!expandMore);
-// };
-
 const UserPage = () => {
   const navigate = useNavigate();
   const { user, setUser } = useContext(UserContext);
+  const [menuVisible, setMenuVisible] = useState(false);
 
   useEffect(() => {
     if (user === null) {
@@ -61,6 +57,10 @@ const UserPage = () => {
       formik.resetForm();
     },
   });
+
+  const handleIconClick = () => {
+    setMenuVisible(!menuVisible);
+  };
 
   return (
     <>
@@ -230,39 +230,41 @@ const UserPage = () => {
                                           style={{
                                             display: "flex",
                                             alignItems: "center",
-                                            position: "relative"
+                                            position: "relative",
                                           }}
                                         >
                                           <MoreVertIcon
-                                            // onClick={handleOpenExpandMore}
                                             style={{ cursor: "pointer" }}
+                                            onClick={handleIconClick}
                                           />
 
-                                          <ul
-                                          // expandMore={expandMore}
-                                            style={{
-                                              display: "flex",
-                                              alignItems: "center",
-                                              justifyContent: "center",
-                                              flexDirection: "column",
-                                              backgroundColor: "white",
-                                              width: "80px",
-                                              borderRadius: "5px",
-                                              position: "absolute",
-                                              top:'-14px',
-                                              left: '-83px'
-                                            }}
-                                          >
-                                            <li
+                                          {menuVisible && (
+                                            <ul
                                               style={{
-                                                borderBottom: "1px solid gray",
+                                                display: "flex",
+                                                alignItems: "center",
+                                                justifyContent: "center",
+                                                flexDirection: "column",
+                                                backgroundColor: "white",
+                                                width: "80px",
+                                                borderRadius: "5px",
+                                                position: "absolute",
+                                                top: "-14px",
+                                                left: "-83px",
                                               }}
                                             >
-                                              edit
-                                            </li>
-                                            <hr />
-                                            <li>delete</li>
-                                          </ul>
+                                              <li
+                                                style={{
+                                                  borderBottom:
+                                                    "1px solid gray",
+                                                }}
+                                              >
+                                                edit
+                                              </li>
+                                              <hr />
+                                              <li>delete</li>
+                                            </ul>
+                                          )}
                                         </div>
                                       </Typography>
 
@@ -349,3 +351,5 @@ const UserPage = () => {
 };
 
 export default UserPage;
+
+

@@ -7,12 +7,7 @@ import Box from "@mui/material/Box";
 import Grid from "@mui/material/Grid";
 import { createTheme, ThemeProvider } from "@mui/material/styles";
 import { useNavigate } from "react-router-dom";
-import {
-  Avatar,
-  TextField,
-  Typography,
-  styled,
-} from "@mui/material";
+import { Avatar, TextField, Typography, styled, Button } from "@mui/material";
 import { Favorite } from "@mui/icons-material";
 import SideBar from "../../../components/User/SideBar";
 
@@ -24,10 +19,10 @@ const Item = styled(Paper)(({ theme }) => ({
 const defaultTheme = createTheme();
 
 const Feed = () => {
-
   const navigate = useNavigate();
   const { user, setUser } = useContext(UserContext);
-  
+  const [searchedUser, setSearchedUser] = useState({});
+
   useEffect(() => {
     if (user === null) {
       navigate("/");
@@ -74,11 +69,55 @@ const Feed = () => {
                 }}
               >
                 <TextField
-                  style={{ width: "35%" }}
+                  style={{ width: "35%", position: "relative" }}
                   id="filled-basic"
                   label="search"
                   variant="filled"
+                  onChange={async (e) => {
+                    const users = await getAllUsers();
+                    users.map((obj) => {
+                      if (obj.username.includes(e.target.value)) {
+                        setSearchedUser(obj);
+                        console.log(searchedUser);
+                      }
+                    });
+                  }}
                 />
+
+                {searchedUser && (
+                  <ul
+                    style={{
+                      position: "absolute",
+                      top: "106px",
+                      width: "24.5%",
+                    }}
+                  >
+                    <li
+                      style={{
+                        display: "flex",
+                        justifyContent: "space-between",
+                        alignItems: "center",
+                        padding: "5px 10px ",
+                      }}
+                    >
+                      <span
+                        style={{
+                          display: "flex",
+                          alignItems: "center",
+                          gap:'10px'
+                        }}
+                      >
+                        <Avatar src={searchedUser.profilePicture} />
+                        {searchedUser.username}
+                      </span>
+
+                      <Button onClick={()=>{
+                        console.log(searchedUser.id)
+                        searchedUser.requests.push({userId: user.id, id :Date.now().toString()})
+                      }}>follow</Button>
+                    </li>
+                  </ul>
+                )}
               </div>
 
               <div style={{ marginTop: "15px" }}>
@@ -109,7 +148,7 @@ const Feed = () => {
                         width: "70px",
                         marginBottom: "10px",
                       }}
-                      src="https://cdn.logojoy.com/wp-content/uploads/20220329171603/dating-app-logo-example.jpg"
+                      src={user.profilePicture}
                     />
                     <div
                       style={{

@@ -1,4 +1,4 @@
-import React, { useContext, useEffect } from "react";
+import React, { useContext, useEffect ,useState } from "react";
 import { UserContext } from "../../../services/context/UserContext";
 import { getAllUsers, putUser } from "../../../services/api/users";
 import CssBaseline from "@mui/material/CssBaseline";
@@ -12,6 +12,7 @@ import { Favorite } from "@mui/icons-material";
 import SideBar from "../../../components/User/SideBar";
 import { useFormik } from "formik";
 import ModeCommentIcon from "@mui/icons-material/ModeComment";
+import MoreVertIcon from "@mui/icons-material/MoreVert";
 
 const Item = styled(Paper)(({ theme }) => ({
   padding: "10px",
@@ -19,6 +20,11 @@ const Item = styled(Paper)(({ theme }) => ({
 }));
 
 const defaultTheme = createTheme();
+
+// const [ expandMore, setExpandMore ] = useState(false)
+// const handleOpenExpandMore = () => {
+//   setExpandMore(!expandMore);
+// };
 
 const UserPage = () => {
   const navigate = useNavigate();
@@ -48,7 +54,7 @@ const UserPage = () => {
         ...prevUser,
         posts: [...prevUser.posts, newPost],
       }));
-    
+
       await putUser(user.id, { posts: [...user.posts, newPost] });
       console.log(user.posts);
 
@@ -172,109 +178,164 @@ const UserPage = () => {
                   <div>
                     <Grid container spacing={2}>
                       {user.posts &&
-                        user.posts.map((post, id) => {
-                          return (
-                            <Grid key={post.id} item xs={3}>
-                              <Item style={{ backgroundImage: `url('${post.imageLink}')` }}>
-                                <div>
+                        user.posts
+                          .sort((a, b) => Number(b.id) - Number(a.id))
+                          .map((post, id) => {
+                            return (
+                              <Grid key={post.id} item xs={3}>
+                                <Item
+                                  style={{
+                                    backgroundImage: `url('${post.imageLink}')`,
+                                    backgroundRepeat: "no-repeat",
+                                    backgroundSize: "cover",
+                                  }}
+                                >
                                   <div>
-                                    <Typography
-                                      style={{
-                                        display: "flex",
-                                        alignItems: "center",
-                                        gap: "10px",
-                                      }}
-                                      component="h1"
-                                      variant="h6"
-                                    >
-                                      <Avatar
-                                        src={user.profilePicture}
-                                        style={{
-                                          height: "50px",
-                                          width: "50px",
-                                          marginBottom: "10px",
-                                        }}
-                                      />
-                                      <span
-                                        style={{
-                                          fontWeight: "700",
-                                          color: "pink",
-                                        }}
-                                      >
-                                        {user.username}
-                                      </span>
-                                    </Typography>
-
-                                    <div style={{ height: "300px" }}></div>
-
-                                    <div
-                                      style={{
-                                        display: "flex",
-                                        justifyContent: "space-between",
-                                        alignItems: "center",
-                                        gap: "10px",
-                                        backgroundColor:
-                                          "rgba(255, 255, 255, 0.5)",
-                                      }}
-                                    >
-                                      <div
+                                    <div>
+                                      <Typography
                                         style={{
                                           display: "flex",
                                           alignItems: "center",
-                                          padding: "10px 20px",
+                                          justifyContent: "space-between",
                                         }}
+                                        component="h1"
+                                        variant="h6"
                                       >
-                                        <span>{post.messageText}</span>
-                                      </div>
+                                        <div
+                                          style={{
+                                            display: "flex",
+                                            alignItems: "center",
+                                            gap: "10px",
+                                          }}
+                                        >
+                                          <Avatar
+                                            src={user.profilePicture}
+                                            style={{
+                                              height: "50px",
+                                              width: "50px",
+                                              marginBottom: "10px",
+                                            }}
+                                          />
+                                          <span
+                                            style={{
+                                              fontWeight: "700",
+                                              color: "pink",
+                                            }}
+                                          >
+                                            {user.username}
+                                          </span>
+                                        </div>
+
+                                        <div
+                                          style={{
+                                            display: "flex",
+                                            alignItems: "center",
+                                            position: "relative"
+                                          }}
+                                        >
+                                          <MoreVertIcon
+                                            // onClick={handleOpenExpandMore}
+                                            style={{ cursor: "pointer" }}
+                                          />
+
+                                          <ul
+                                          // expandMore={expandMore}
+                                            style={{
+                                              display: "flex",
+                                              alignItems: "center",
+                                              justifyContent: "center",
+                                              flexDirection: "column",
+                                              backgroundColor: "white",
+                                              width: "80px",
+                                              borderRadius: "5px",
+                                              position: "absolute",
+                                              top:'-14px',
+                                              left: '-83px'
+                                            }}
+                                          >
+                                            <li
+                                              style={{
+                                                borderBottom: "1px solid gray",
+                                              }}
+                                            >
+                                              edit
+                                            </li>
+                                            <hr />
+                                            <li>delete</li>
+                                          </ul>
+                                        </div>
+                                      </Typography>
+
+                                      <div style={{ height: "300px" }}></div>
+
                                       <div
                                         style={{
                                           display: "flex",
+                                          justifyContent: "space-between",
                                           alignItems: "center",
-                                          padding: "10px 20px",
                                           gap: "10px",
+                                          backgroundColor:
+                                            "rgba(255, 255, 255, 0.5)",
                                         }}
                                       >
-                                        <span
+                                        <div
                                           style={{
                                             display: "flex",
                                             alignItems: "center",
+                                            padding: "10px 20px",
+                                          }}
+                                        >
+                                          <span>{post.messageText}</span>
+                                        </div>
+                                        <div
+                                          style={{
+                                            display: "flex",
+                                            alignItems: "center",
+                                            padding: "10px 20px",
+                                            gap: "10px",
                                           }}
                                         >
                                           <span
                                             style={{
-                                              color: "pink",
-                                              fontWeight: "bolder",
+                                              display: "flex",
+                                              alignItems: "center",
                                             }}
                                           >
-                                            {post.comments.length}
+                                            <span
+                                              style={{
+                                                color: "pink",
+                                                fontWeight: "bolder",
+                                              }}
+                                            >
+                                              {post.comments.length}
+                                            </span>
+                                            <ModeCommentIcon />
                                           </span>
-                                          <ModeCommentIcon />
-                                        </span>
 
-                                        <span
-                                          style={{
-                                            display: "flex",
-                                            alignItems: "center",
-                                          }}
-                                        >
                                           <span
                                             style={{
-                                              color: "pink",
-                                              fontWeight: "bolder",
+                                              display: "flex",
+                                              alignItems: "center",
                                             }}
                                           >
-                                            {post.likes.length}
+                                            <span
+                                              style={{
+                                                color: "pink",
+                                                fontWeight: "bolder",
+                                              }}
+                                            >
+                                              {post.likes.length}
+                                            </span>
+                                            <Favorite />
                                           </span>
-                                          <Favorite />
-                                        </span>
+                                        </div>
                                       </div>
                                     </div>
                                   </div>
-                                </div>
-                              </Item>
-                            </Grid>
-                          );
-                        })}
+                                </Item>
+                              </Grid>
+                            );
+                          })}
                     </Grid>
                   </div>
                 </div>

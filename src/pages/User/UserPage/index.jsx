@@ -182,7 +182,7 @@ const UserPage = () => {
                           .sort((a, b) => Number(b.id) - Number(a.id))
                           .map((post, id) => {
                             return (
-                              <Grid key={post.id} item xs={3}>
+                              <Grid key={post.id} item lg={3} md={6} xs={12}>
                                 <Item
                                   style={{
                                     backgroundImage: `url('${post.imageLink}')`,

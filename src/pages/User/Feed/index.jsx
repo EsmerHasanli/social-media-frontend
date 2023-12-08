@@ -1,6 +1,6 @@
 import React, { useContext, useEffect, useState } from "react";
 import { UserContext } from "../../../services/context/UserContext";
-import { getAllUsers } from "../../../services/api/users";
+import { getAllUsers, putUser } from "../../../services/api/users";
 import CssBaseline from "@mui/material/CssBaseline";
 import Paper from "@mui/material/Paper";
 import Box from "@mui/material/Box";
@@ -10,6 +10,16 @@ import { useNavigate } from "react-router-dom";
 import { Avatar, TextField, Typography, styled, Button } from "@mui/material";
 import { Favorite } from "@mui/icons-material";
 import SideBar from "../../../components/User/SideBar";
+
+// Import Swiper React components
+import { Swiper, SwiperSlide } from "swiper/react";
+
+// Import Swiper styles
+import "swiper/css";
+import "swiper/css/navigation";
+
+// import required modules
+import { Navigation } from "swiper/modules";
 
 const Item = styled(Paper)(({ theme }) => ({
   padding: "10px",
@@ -22,12 +32,57 @@ const Feed = () => {
   const navigate = useNavigate();
   const { user, setUser } = useContext(UserContext);
   const [searchedUser, setSearchedUser] = useState([]);
+  const [users, setUsers] = useState([]);
+  const [searchQuery, setSearchQuery] = useState("");
 
   useEffect(() => {
     if (user === null) {
       navigate("/");
     }
+
+    async function fetchData() {
+      const fetchedUsers = await getAllUsers();
+      setUsers(fetchedUsers);
+    }
+    fetchData();
   }, []);
+
+  const handleFollow = async (id) => {
+    const requestedUser = users.find((x) => x.id === id);
+
+    const request = {
+      id: Date.now().toString(),
+      userId: user.id,
+    };
+
+    if (!requestedUser.isPublic) {
+        if (!requestedUser.requests.find((x) => x.id === user.id)) {
+          await putUser(requestedUser.id, {
+            requests: [...requestedUser.requests, request],
+          });
+          alert('request send')
+        }else{
+          alert('you alredy sent request lately')
+        }
+    } 
+    else {
+      console.log('test ', requestedUser)
+        if (!requestedUser.followings.find((x) => x.id === user.id)) {
+          await putUser(user.id, {
+            followings: [...user.followings, request],
+          });
+
+          await putUser(requestedUser.id, {
+            followers: [...user.followers, request],
+          });
+
+          alert('added to friends')
+        }else{
+          alert('already in friends')
+        }
+    }
+
+  };
 
   return (
     <>
@@ -73,14 +128,13 @@ const Feed = () => {
                   id="filled-basic"
                   label="search"
                   variant="filled"
-                  onFocus={async () => {
-                    const users = await getAllUsers();
-                    setSearchedUser(users);
-                  }}
-                  onBlur={() => setSearchedUser([])}
-                  onChange={async (e) => {
-                    const searchQuery = e.target.value;
-                    const users = await getAllUsers();
+                  // onChange={async () => {
+                  //   const users = await getAllUsers();
+                  //   setSearchedUser(users);
+                  // }}
+                  //onBlur={() => setSearchedUser([])}
+                  onChange={(e) => {
+                    setSearchQuery(e.target.value.toLowerCase());
 
                     const filteredUsers = users.filter((obj) =>
                       obj.username.includes(searchQuery)
@@ -88,24 +142,25 @@ const Feed = () => {
 
                     setSearchedUser(filteredUsers);
                   }}
-                  //autocomplete="off"
+                  autoComplete="off"
                 />
 
-                {searchedUser.length > 0 && (
-                  <ul
-                    onClick={(e) => {
-                      e.stopPropagation();
-                    }}
-                    style={{
-                      position: "absolute",
-                      top: "106px",
-                      width: "24.5%",
-                      height: "200px",
-                      overflow: "auto",
-                      zIndex:3
-                    }}
-                  >
-                    {searchedUser.map((x) =>
+                <ul
+                  onClick={(e) => {
+                    e.stopPropagation();
+                  }}
+                  style={{
+                    position: "absolute",
+                    top: "106px",
+                    width: "24.5%",
+                    height: "200px",
+                    overflow: "auto",
+                    zIndex: 3,
+                  }}
+                >
+                  {searchQuery &&
+                    searchedUser &&
+                    searchedUser.map((x) =>
                       x.username !== user.username && x.username !== "admin" ? (
                         <li
                           key={x.id}
@@ -115,14 +170,15 @@ const Feed = () => {
                             alignItems: "center",
                             padding: "5px 10px ",
                             cursor: "pointer",
+                            backgroundColor: "white",
                           }}
                           onClick={(e) => {
-                            e.stopPropagation();
-                            console.log(x.id);
-                            x.requests.push({
-                              userId: x.id,
-                              id: Date.now().toString(),
-                            });
+                            // e.stopPropagation();
+                            // console.log(x.id);
+                            // x.requests.push({
+                            //   userId: x.id,
+                            //   id: Date.now().toString(),
+                            // });
                             // setSearchedUser([]);
                           }}
                         >
@@ -138,14 +194,9 @@ const Feed = () => {
                           </span>
 
                           <Button
+                            data-id={x.id}
                             onClick={(e) => {
-                              e.stopPropagation();
-                              console.log(x.id);
-                              x.requests.push({
-                                userId: x.id,
-                                id: Date.now().toString(),
-                              });
-                              // setSearchedUser([]);
+                              handleFollow(e.target.getAttribute("data-id"));
                             }}
                           >
                             follow
@@ -153,8 +204,7 @@ const Feed = () => {
                         </li>
                       ) : null
                     )}
-                  </ul>
-                )}
+                </ul>
               </div>
 
               <div style={{ marginTop: "15px" }}>
@@ -170,7 +220,10 @@ const Feed = () => {
                   Stories
                 </Typography>
 
-                <ul
+                <Swiper
+                  //navigation={true}
+                  modules={[Navigation]}
+                  className="mySwiper"
                   style={{
                     display: "flex",
                     justifyContent: "flex-start",
@@ -178,7 +231,14 @@ const Feed = () => {
                     gap: "15px",
                   }}
                 >
-                  <li style={{ position: "relative" }}>
+                  <SwiperSlide
+                    style={{
+                      width: "100px",
+                      height: "100px",
+                      position: "relative",
+                    }}
+                  >
+                    {" "}
                     <Avatar
                       style={{
                         height: "70px",
@@ -205,9 +265,15 @@ const Feed = () => {
                     >
                       +
                     </div>
-                  </li>
+                  </SwiperSlide>
 
-                  <li>
+                  <SwiperSlide
+                    style={{
+                      width: "100px",
+                      height: "100px",
+                      position: "relative",
+                    }}
+                  >
                     <Avatar
                       style={{
                         height: "70px",
@@ -216,30 +282,8 @@ const Feed = () => {
                       }}
                       src="https://cdn.logojoy.com/wp-content/uploads/20220329171603/dating-app-logo-example.jpg"
                     />
-                  </li>
-
-                  <li>
-                    <Avatar
-                      style={{
-                        height: "70px",
-                        width: "70px",
-                        marginBottom: "10px",
-                      }}
-                      src="https://cdn.logojoy.com/wp-content/uploads/20220329171603/dating-app-logo-example.jpg"
-                    />
-                  </li>
-
-                  <li>
-                    <Avatar
-                      style={{
-                        height: "70px",
-                        width: "70px",
-                        marginBottom: "10px",
-                      }}
-                      src="https://cdn.logojoy.com/wp-content/uploads/20220329171603/dating-app-logo-example.jpg"
-                    />
-                  </li>
-                </ul>
+                  </SwiperSlide>
+                </Swiper>
               </div>
 
               <div style={{ marginTop: "15px" }}>
@@ -257,7 +301,7 @@ const Feed = () => {
 
                 <div>
                   <Grid container spacing={2}>
-                    <Grid item xs={3}>
+                    <Grid item xs={3} lg={3} md={12}>
                       <Item
                         style={{
                           backgroundImage:
@@ -312,7 +356,7 @@ const Feed = () => {
                       </Item>
                     </Grid>
 
-                    <Grid item xs={3}>
+                    <Grid item xs={3} lg={3} md={12}>
                       <Item
                         style={{
                           backgroundImage:
@@ -367,7 +411,7 @@ const Feed = () => {
                       </Item>
                     </Grid>
 
-                    <Grid item xs={3}>
+                    <Grid item xs={3} lg={3} md={12}>
                       <Item
                         style={{
                           backgroundImage:
@@ -422,7 +466,7 @@ const Feed = () => {
                       </Item>
                     </Grid>
 
-                    <Grid item xs={3}>
+                    <Grid item xs={3} lg={3} md={12}>
                       <Item
                         style={{
                           backgroundImage:
@@ -477,7 +521,7 @@ const Feed = () => {
                       </Item>
                     </Grid>
 
-                    <Grid item xs={3}>
+                    <Grid item xs={3} lg={3} md={12}>
                       <Item
                         style={{
                           backgroundImage:

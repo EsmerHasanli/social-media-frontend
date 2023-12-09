@@ -13,6 +13,7 @@ import SideBar from "../../../components/User/SideBar";
 import { useFormik } from "formik";
 import ModeCommentIcon from "@mui/icons-material/ModeComment";
 import MoreVertIcon from "@mui/icons-material/MoreVert";
+import Swal from "sweetalert2";
 
 const Item = styled(Paper)(({ theme }) => ({
   padding: "10px",
@@ -24,7 +25,7 @@ const defaultTheme = createTheme();
 const UserPage = () => {
   const navigate = useNavigate();
   const { user, setUser } = useContext(UserContext);
-  const [menuVisible, setMenuVisible] = useState(false);
+  const [postMenuVisibility, setPostMenuVisibility] = useState({});
 
   useEffect(() => {
     if (user === null) {
@@ -58,8 +59,46 @@ const UserPage = () => {
     },
   });
 
-  const handleIconClick = () => {
-    setMenuVisible(!menuVisible);
+  const handleIconClick = (id) => {
+    setPostMenuVisibility((prevVisibility) => ({
+      ...prevVisibility,
+      [id]: !prevVisibility[id],
+    }));
+  };
+
+  const handleDeletePost = async (postId) => {
+    Swal.fire({
+      title: "Are you sure?",
+      text: "You won't be able to revert this!",
+      icon: "warning",
+      showCancelButton: true,
+      confirmButtonColor: "#3085d6",
+      cancelButtonColor: "#d33",
+      confirmButtonText: "Yes, delete it!",
+    }).then(async (result) => {
+      if (result.isConfirmed) {
+        Swal.fire({
+          title: "Deleted!",
+          text: "Your file has been deleted.",
+          icon: "success",
+        });
+        const updatedPosts = user.posts.filter((post) => post.id !== postId);
+        setUser((prevUser) => ({
+          ...prevUser,
+          posts: updatedPosts,
+        }));
+
+        await putUser(user.id, { posts: updatedPosts });
+      }
+    });
+    setPostMenuVisibility((prevVisibility) => {
+      const { [postId]: deletedPostVisibility, ...rest } = prevVisibility;
+      return rest;
+    });
+  };
+
+  const handleEditPost = async (postId) => {
+    console.log(postId);
   };
 
   return (
@@ -234,11 +273,16 @@ const UserPage = () => {
                                           }}
                                         >
                                           <MoreVertIcon
+                                            data-id={post.id}
                                             style={{ cursor: "pointer" }}
-                                            onClick={handleIconClick}
+                                            onClick={(e) =>
+                                              handleIconClick(
+                                                e.target.getAttribute("data-id")
+                                              )
+                                            }
                                           />
 
-                                          {menuVisible && (
+                                          {postMenuVisibility[post.id] && (
                                             <ul
                                               style={{
                                                 display: "flex",
@@ -254,15 +298,26 @@ const UserPage = () => {
                                               }}
                                             >
                                               <li
+                                                onClick={() =>
+                                                  handleEditPost(post.id)
+                                                }
                                                 style={{
                                                   borderBottom:
                                                     "1px solid gray",
+                                                  cursor: "pointer",
                                                 }}
                                               >
                                                 edit
                                               </li>
                                               <hr />
-                                              <li>delete</li>
+                                              <li
+                                                onClick={() =>
+                                                  handleDeletePost(post.id)
+                                                }
+                                                style={{ cursor: "pointer" }}
+                                              >
+                                                delete
+                                              </li>
                                             </ul>
                                           )}
                                         </div>
@@ -351,5 +406,3 @@ const UserPage = () => {
 };
 
 export default UserPage;
-
-

@@ -6,21 +6,15 @@ import Paper from "@mui/material/Paper";
 import Box from "@mui/material/Box";
 import Grid from "@mui/material/Grid";
 import { createTheme, ThemeProvider } from "@mui/material/styles";
-import { useNavigate } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { Avatar, TextField, Typography, styled, Button } from "@mui/material";
 import { Favorite } from "@mui/icons-material";
 import SideBar from "../../../components/User/SideBar";
-
-// Import Swiper React components
 import { Swiper, SwiperSlide } from "swiper/react";
-
-// Import Swiper styles
 import "swiper/css";
 import "swiper/css/navigation";
-
-// import required modules
 import { Navigation } from "swiper/modules";
-
+import ModeCommentIcon from "@mui/icons-material/ModeComment";
 const Item = styled(Paper)(({ theme }) => ({
   padding: "10px",
   color: theme.palette.text.secondary,
@@ -34,6 +28,8 @@ const Feed = () => {
   const [searchedUser, setSearchedUser] = useState([]);
   const [users, setUsers] = useState([]);
   const [searchQuery, setSearchQuery] = useState("");
+  const [followings, setFollowings] = useState([]);
+  const [likedPosts, setLikedPosts] = useState([]);
 
   useEffect(() => {
     if (user === null) {
@@ -47,6 +43,19 @@ const Feed = () => {
     fetchData();
   }, []);
 
+  useEffect(() => {
+    const followingUsersId = user?.followings?.map(
+      (following) => following.userId
+    );
+    console.log(followingUsersId);
+
+    const followingUsers = users.filter((x) => followingUsersId.includes(x.id));
+    console.log(followingUsers);
+
+    setFollowings(followingUsers);
+    console.log(followings);
+  }, [user, users]);
+
   const handleFollow = async (id) => {
     const requestedUser = users.find((x) => x.id === id);
 
@@ -56,32 +65,52 @@ const Feed = () => {
     };
 
     if (!requestedUser.isPublic) {
-        if (!requestedUser.requests.find((x) => x.id === user.id)) {
-          await putUser(requestedUser.id, {
-            requests: [...requestedUser.requests, request],
-          });
-          alert('request send')
-        }else{
-          alert('you alredy sent request lately')
-        }
-    } 
-    else {
-      console.log('test ', requestedUser)
-        if (!requestedUser.followings.find((x) => x.id === user.id)) {
-          await putUser(user.id, {
-            followings: [...user.followings, request],
-          });
-
-          await putUser(requestedUser.id, {
-            followers: [...user.followers, request],
-          });
-
-          alert('added to friends')
-        }else{
-          alert('already in friends')
-        }
+      if (!requestedUser.requests.find((x) => x.id === user.id)) {
+        await putUser(requestedUser.id, {
+          requests: [...requestedUser.requests, request],
+        });
+        alert("Request sent");
+      } else {
+        alert("You already sent a request lately");
+      }
+    } else {
+      if (!requestedUser.followings.find((x) => x.id === user.id)) {
+        const updatedUser = {
+          ...user,
+          followings: [
+            ...user.followings,
+            { userId: requestedUser.id, id: Date.now().toString() },
+          ],
+        };
+        setUser(updatedUser);
+        await putUser(user.id, {
+          followings: [
+            ...user.followings,
+            { userId: requestedUser.id, id: Date.now().toString() },
+          ],
+        });
+        await putUser(requestedUser.id, {
+          followers: [...requestedUser.followers, request],
+        });
+        alert("Added to friends");
+      } else {
+        alert("Already in friends");
+      }
     }
+  };
 
+  const handleLike = (postId) => {
+    if (likedPosts.includes(postId)) {
+      setLikedPosts((prevLikedPosts) =>
+        prevLikedPosts.filter((id) => id !== postId)
+      );
+    } else {
+      setLikedPosts((prevLikedPosts) => [...prevLikedPosts, postId]);
+    }
+  };
+
+  const isPostLiked = (postId) => {
+    return likedPosts.includes(postId);
   };
 
   return (
@@ -182,7 +211,7 @@ const Feed = () => {
                             // setSearchedUser([]);
                           }}
                         >
-                          <span
+                          <Link  to={`/users/${x.id}`}
                             style={{
                               display: "flex",
                               alignItems: "center",
@@ -191,7 +220,7 @@ const Feed = () => {
                           >
                             <Avatar src={x.profilePicture} />
                             {x.username}
-                          </span>
+                          </Link>
 
                           <Button
                             data-id={x.id}
@@ -301,280 +330,139 @@ const Feed = () => {
 
                 <div>
                   <Grid container spacing={2}>
-                    <Grid item xs={3} lg={3} md={12}>
-                      <Item
-                        style={{
-                          backgroundImage:
-                            "url(https://images.pexels.com/photos/4819296/pexels-photo-4819296.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=1)",
-                        }}
-                      >
-                        <div>
-                          <div>
-                            <Typography
-                              style={{
-                                display: "flex",
-                                alignItems: "center",
-                                gap: "10px",
-                              }}
-                              component="h1"
-                              variant="h6"
-                            >
-                              <Avatar
-                                src="https://images.pexels.com/photos/4226881/pexels-photo-4226881.jpeg?auto=compress&cs=tinysrgb&dpr=1&w=500"
+                    {followings.map(
+                      (followedUser) =>
+                        followedUser.posts &&
+                        followedUser.posts
+                          .sort((a, b) => Number(b.id) - Number(a.id))
+                          .map((post) => (
+                            <Grid key={post.id} item lg={3} md={6} xs={12}>
+                              <Item
                                 style={{
-                                  height: "50px",
-                                  width: "50px",
-                                  marginBottom: "10px",
+                                  backgroundRepeat: "no-repeat",
+                                  backgroundSize: "cover",
+                                  backgroundImage: `url('${post.imageLink}')`,
                                 }}
-                              />
-                              <span
-                                style={{ fontWeight: "700", color: "pink" }}
                               >
-                                username
-                              </span>
-                            </Typography>
+                                <div>
+                                  <div>
+                                    <Typography
+                                      style={{
+                                        display: "flex",
+                                        alignItems: "center",
+                                        justifyContent: "space-between",
+                                      }}
+                                      component="h1"
+                                      variant="h6"
+                                    >
+                                      <div
+                                        style={{
+                                          display: "flex",
+                                          alignItems: "center",
+                                          gap: "10px",
+                                        }}
+                                      >
+                                        <Avatar
+                                          src={followedUser.profilePicture}
+                                          style={{
+                                            height: "50px",
+                                            width: "50px",
+                                            marginBottom: "10px",
+                                          }}
+                                        />
+                                        <span
+                                          style={{
+                                            fontWeight: "700",
+                                            color: "pink",
+                                          }}
+                                        >
+                                          {followedUser.username}
+                                        </span>
+                                      </div>
+                                    </Typography>
 
-                            <div style={{ height: "250px" }}></div>
+                                    <div style={{ height: "300px" }}></div>
 
-                            <div
-                              style={{
-                                display: "flex",
-                                justifyContent: "flex-end",
-                                alignItems: "center",
-                                gap: "10px",
-                              }}
-                            >
-                              <span
-                                style={{ color: "pink", fontWeight: "bolder" }}
-                              >
-                                13
-                              </span>
-                              <Favorite />
-                            </div>
-                          </div>
-                        </div>
-                      </Item>
-                    </Grid>
-
-                    <Grid item xs={3} lg={3} md={12}>
-                      <Item
-                        style={{
-                          backgroundImage:
-                            "url(https://images.pexels.com/photos/4947386/pexels-photo-4947386.jpeg?auto=compress&cs=tinysrgb&w=600&lazy=load)",
-                        }}
-                      >
-                        <div>
-                          <div>
-                            <Typography
-                              style={{
-                                display: "flex",
-                                alignItems: "center",
-                                gap: "10px",
-                              }}
-                              component="h1"
-                              variant="h6"
-                            >
-                              <Avatar
-                                src="https://images.pexels.com/photos/4226881/pexels-photo-4226881.jpeg?auto=compress&cs=tinysrgb&dpr=1&w=500"
-                                style={{
-                                  height: "50px",
-                                  width: "50px",
-                                  marginBottom: "10px",
-                                }}
-                              />
-                              <span
-                                style={{ fontWeight: "700", color: "pink" }}
-                              >
-                                username
-                              </span>
-                            </Typography>
-
-                            <div style={{ height: "250px" }}></div>
-
-                            <div
-                              style={{
-                                display: "flex",
-                                justifyContent: "flex-end",
-                                alignItems: "center",
-                                gap: "10px",
-                              }}
-                            >
-                              <span
-                                style={{ color: "pink", fontWeight: "bolder" }}
-                              >
-                                13
-                              </span>
-                              <Favorite />
-                            </div>
-                          </div>
-                        </div>
-                      </Item>
-                    </Grid>
-
-                    <Grid item xs={3} lg={3} md={12}>
-                      <Item
-                        style={{
-                          backgroundImage:
-                            "url(https://images.pexels.com/photos/4947110/pexels-photo-4947110.jpeg?auto=compress&cs=tinysrgb&w=600&lazy=load)",
-                        }}
-                      >
-                        <div>
-                          <div>
-                            <Typography
-                              style={{
-                                display: "flex",
-                                alignItems: "center",
-                                gap: "10px",
-                              }}
-                              component="h1"
-                              variant="h6"
-                            >
-                              <Avatar
-                                src="https://images.pexels.com/photos/4226881/pexels-photo-4226881.jpeg?auto=compress&cs=tinysrgb&dpr=1&w=500"
-                                style={{
-                                  height: "50px",
-                                  width: "50px",
-                                  marginBottom: "10px",
-                                }}
-                              />
-                              <span
-                                style={{ fontWeight: "700", color: "pink" }}
-                              >
-                                username
-                              </span>
-                            </Typography>
-
-                            <div style={{ height: "250px" }}></div>
-
-                            <div
-                              style={{
-                                display: "flex",
-                                justifyContent: "flex-end",
-                                alignItems: "center",
-                                gap: "10px",
-                              }}
-                            >
-                              <span
-                                style={{ color: "pink", fontWeight: "bolder" }}
-                              >
-                                13
-                              </span>
-                              <Favorite />
-                            </div>
-                          </div>
-                        </div>
-                      </Item>
-                    </Grid>
-
-                    <Grid item xs={3} lg={3} md={12}>
-                      <Item
-                        style={{
-                          backgroundImage:
-                            "url(https://images.pexels.com/photos/7421220/pexels-photo-7421220.jpeg?auto=compress&cs=tinysrgb&w=600&lazy=load)",
-                        }}
-                      >
-                        <div>
-                          <div>
-                            <Typography
-                              style={{
-                                display: "flex",
-                                alignItems: "center",
-                                gap: "10px",
-                              }}
-                              component="h1"
-                              variant="h6"
-                            >
-                              <Avatar
-                                src="https://images.pexels.com/photos/4226881/pexels-photo-4226881.jpeg?auto=compress&cs=tinysrgb&dpr=1&w=500"
-                                style={{
-                                  height: "50px",
-                                  width: "50px",
-                                  marginBottom: "10px",
-                                }}
-                              />
-                              <span
-                                style={{ fontWeight: "700", color: "pink" }}
-                              >
-                                username
-                              </span>
-                            </Typography>
-
-                            <div style={{ height: "250px" }}></div>
-
-                            <div
-                              style={{
-                                display: "flex",
-                                justifyContent: "flex-end",
-                                alignItems: "center",
-                                gap: "10px",
-                              }}
-                            >
-                              <span
-                                style={{ color: "pink", fontWeight: "bolder" }}
-                              >
-                                13
-                              </span>
-                              <Favorite style={{ fill: "red" }} />
-                            </div>
-                          </div>
-                        </div>
-                      </Item>
-                    </Grid>
-
-                    <Grid item xs={3} lg={3} md={12}>
-                      <Item
-                        style={{
-                          backgroundImage:
-                            "url(https://images.pexels.com/photos/5490216/pexels-photo-5490216.jpeg?auto=compress&cs=tinysrgb&w=600&lazy=load)",
-                        }}
-                      >
-                        <div>
-                          <div>
-                            <Typography
-                              style={{
-                                display: "flex",
-                                alignItems: "center",
-                                gap: "10px",
-                              }}
-                              component="h1"
-                              variant="h6"
-                            >
-                              <Avatar
-                                src="https://images.pexels.com/photos/4226881/pexels-photo-4226881.jpeg?auto=compress&cs=tinysrgb&dpr=1&w=500"
-                                style={{
-                                  height: "50px",
-                                  width: "50px",
-                                  marginBottom: "10px",
-                                }}
-                              />
-                              <span
-                                style={{ fontWeight: "700", color: "pink" }}
-                              >
-                                username
-                              </span>
-                            </Typography>
-
-                            <div style={{ height: "250px" }}></div>
-
-                            <div
-                              style={{
-                                display: "flex",
-                                justifyContent: "flex-end",
-                                alignItems: "center",
-                                gap: "10px",
-                              }}
-                            >
-                              <span
-                                style={{ color: "pink", fontWeight: "bolder" }}
-                              >
-                                13
-                              </span>
-                              <Favorite style={{ fill: "red" }} />
-                            </div>
-                          </div>
-                        </div>
-                      </Item>
-                    </Grid>
+                                    <div
+                                      style={{
+                                        display: "flex",
+                                        justifyContent: "space-between",
+                                        alignItems: "center",
+                                        gap: "10px",
+                                        backgroundColor:
+                                          "rgba(255, 255, 255, 0.5)",
+                                      }}
+                                    >
+                                      <div
+                                        style={{
+                                          display: "flex",
+                                          alignItems: "center",
+                                          padding: "10px 20px",
+                                        }}
+                                      >
+                                        <span>{post.messageText}</span>
+                                      </div>
+                                      <div
+                                        style={{
+                                          display: "flex",
+                                          alignItems: "center",
+                                          padding: "10px 20px",
+                                          gap: "10px",
+                                        }}
+                                      >
+                                        <article
+                                          style={{
+                                            display: "flex",
+                                            alignItems: "center",
+                                          }}
+                                        >
+                                          <span
+                                            style={{
+                                              fontWeight: "bolder",
+                                            }}
+                                          >
+                                            {post.likes.length}
+                                          </span>
+                                          <Favorite
+                                            style={{
+                                              fill: isPostLiked(post.id)
+                                                ? "rgb(119,5,23)"
+                                                : "black",
+                                            }}
+                                            data-id={post.id}
+                                            onClick={(e) =>
+                                              handleLike(
+                                                e.target.getAttribute("data-id")
+                                              )
+                                            }
+                                          />
+                                        </article>
+                                        <article
+                                          style={{
+                                            display: "flex",
+                                            alignItems: "center",
+                                          }}
+                                        >
+                                          <span
+                                            style={{
+                                              fontWeight: "bolder",
+                                            }}
+                                          >
+                                            {post.comments.length}
+                                          </span>
+                                          <ModeCommentIcon
+                                            data-id={post.id}
+                                            //onClick={(e) => handleAddComment(e.target.getAttribute("data-id"))}
+                                          />
+                                        </article>
+                                      </div>
+                                    </div>
+                                  </div>
+                                </div>
+                              </Item>
+                            </Grid>
+                          ))
+                    )}
                   </Grid>
                 </div>
               </div>

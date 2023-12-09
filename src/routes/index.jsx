@@ -7,6 +7,8 @@ import UsersPage from "../pages/Admin/UsersPage";
 import Feed from "../pages/User/Feed";
 import UserPage from "../pages/User/UserPage";
 import UserProfile from "../pages/User/UserProfile";
+import Followers from "../pages/User/Followers";
+import Followings from "../pages/User/Followings";
 
 
 export const ROUTES = [
@@ -31,9 +33,17 @@ export const ROUTES = [
         element: <UserPage />,
       },
       {
-        path:'test',
+        path:'users/:id',
         element:<UserProfile/>
-      }
+      },
+      {
+        path:'followers',
+        element:<Followers/>
+      },
+      {
+        path:'followings',
+        element:<Followings/>
+      },
     ],
   },
   {

@@ -1,0 +1,215 @@
+[
+    {
+      "username": "admin",
+      "fullName": "Admin Adminovic",
+      "email": "admin@gmail.com",
+      "password": "admin123",
+      "bio": "Hi, my name is Jamal",
+      "profilePicture": "https://pics.craiyon.com/2023-07-13/70f4c8db63f94f30b453aee048daee7b.webp",
+      "followers": [],
+      "followings": [],
+      "requests": [],
+      "posts": [],
+      "stories": [],
+      "isVerified": true,
+      "isPublic": false,
+      "isAdmin": true,
+      "id": "1"
+    },
+    {
+      "username": "esmer",
+      "fullName": "Esmer Hasanli",
+      "email": "esmer@gmail.com",
+      "password": "Esmer123!",
+      "bio": "pain au chocolat",
+      "profilePicture": "https://i.pinimg.com/originals/57/f9/2b/57f92b4d1377cf7a818a6959a79857a6.jpg",
+      "followers": [],
+      "followings": [
+        {
+          "userId": "3",
+          "id": "1702134479960"
+        },
+        {
+          "userId": "5",
+          "id": "1702134485765"
+        },
+        {
+          "userId": "7",
+          "id": "1702134492602"
+        }
+      ],
+      "requests": [],
+      "posts": [
+        {
+          "id": "1702113934548",
+          "imageLink": "https://images.pexels.com/photos/19312012/pexels-photo-19312012/free-photo-of-a-christmas-tree-with-ornaments-and-paper-bags.jpeg?auto=compress&cs=tinysrgb&w=1600&lazy=load",
+          "messageText": ":)",
+          "likes": [],
+          "comments": []
+        },
+        {
+          "id": "1702114113917",
+          "imageLink": "https://images.pexels.com/photos/5646986/pexels-photo-5646986.jpeg?auto=compress&cs=tinysrgb&w=600&lazy=load",
+          "messageText": "",
+          "likes": [],
+          "comments": []
+        }
+      ],
+      "stories": [],
+      "isVerified": false,
+      "isPublic": false,
+      "isAdmin": false,
+      "id": "2",
+      "confirmPassword": "",
+      "currentPassword": "",
+      "newPassword": "",
+      "changeConfidence": false
+    },
+    {
+      "username": "elnurxo",
+      "fullName": "Elnur Khalilov",
+      "email": "elnur@gmail.com",
+      "password": "Elnur123!",
+      "bio": "",
+      "profilePicture": "https://avatars.githubusercontent.com/u/87971131?v=4",
+      "followers": [
+        {
+          "id": "1702134479960",
+          "userId": "2"
+        }
+      ],
+      "followings": [],
+      "requests": [],
+      "posts": [
+        {
+          "id": "1701936851793",
+          "imageLink": "https://images.pexels.com/photos/943096/pexels-photo-943096.jpeg?auto=compress&cs=tinysrgb&w=600",
+          "messageText": "coding",
+          "likes": [],
+          "comments": []
+        }
+      ],
+      "stories": [],
+      "isVerified": false,
+      "isPublic": true,
+      "isAdmin": false,
+      "id": "3",
+      "confirmPassword": "",
+      "currentPassword": "",
+      "newPassword": "",
+      "changeConfidence": false
+    },
+    {
+      "username": "nicat827",
+      "fullName": "Nicat Mecidov",
+      "email": "nicat@mail.ru",
+      "password": "Bot827!",
+      "bio": "backend developer",
+      "profilePicture": "https://avatars.githubusercontent.com/u/97800703?v=4",
+      "followers": [],
+      "followings": [],
+      "requests": [],
+      "stories": [],
+      "isVerified": false,
+      "isPublic": false,
+      "isAdmin": false,
+      "id": "4",
+      "confirmPassword": "",
+      "currentPassword": "",
+      "newPassword": "",
+      "changeConfidence": false
+    },
+    {
+      "username": "ayanasgarli",
+      "fullName": "Ayan Asgarli",
+      "email": "ayan@gmail.com",
+      "password": "Ayan123!",
+      "bio": "",
+      "profilePicture": "https://images.pexels.com/photos/6320601/pexels-photo-6320601.jpeg?auto=compress&cs=tinysrgb&w=300",
+      "followers": [
+        {
+          "id": "1702134485765",
+          "userId": "2"
+        }
+      ],
+      "followings": [],
+      "requests": [],
+      "posts": [
+        {
+          "id": "1701933030083",
+          "imageLink": "https://images.pexels.com/photos/11769697/pexels-photo-11769697.jpeg?auto=compress&cs=tinysrgb&w=1600&lazy=load",
+          "messageText": ":)",
+          "likes": [],
+          "comments": []
+        },
+        {
+          "id": "1701931324978",
+          "imageLink": "https://images.pexels.com/photos/16922579/pexels-photo-16922579/free-photo-of-woman-face-reflection-in-scooter-mirror.jpeg?auto=compress&cs=tinysrgb&w=1600&lazy=load",
+          "messageText": "hi ",
+          "likes": [],
+          "comments": []
+        },
+        {
+          "id": "1701894391487",
+          "imageLink": "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQImjxQ2Hw_dr6WU0_mBQWIhSWhxRFzbKCL3Q&usqp=CAU",
+          "messageText": "",
+          "likes": [],
+          "comments": []
+        },
+        {
+          "id": "1702027392814",
+          "imageLink": "https://images.pexels.com/photos/19394454/pexels-photo-19394454/free-photo-of-a-group-of-people-standing-in-front-of-a-building-decorated-with-christmas-decorations.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=1",
+          "messageText": "ny",
+          "likes": [],
+          "comments": []
+        }
+      ],
+      "stories": [],
+      "isVerified": false,
+      "isPublic": true,
+      "isAdmin": false,
+      "id": "5",
+      "confirmPassword": "Ayan123!"
+    },
+    {
+      "username": "slhv",
+      "fullName": "Ayshen Salahova",
+      "email": "ayshen@gmail.com",
+      "password": "Ayshen123!",
+      "bio": "",
+      "profilePicture": "https://images.pexels.com/photos/460736/pexels-photo-460736.jpeg?auto=compress&cs=tinysrgb&w=600",
+      "followers": [],
+      "followings": [],
+      "requests": [],
+      "posts": [],
+      "stories": [],
+      "isVerified": false,
+      "isPublic": false,
+      "isAdmin": false,
+      "id": "6",
+      "confirmPassword": "Ayshen123!"
+    },
+    {
+      "username": "gurbangurbanzade",
+      "fullName": "Gurban Gurbanzada",
+      "email": "gurban.gurbanzadeh@gmail.com",
+      "password": "Test123!",
+      "bio": "",
+      "profilePicture": "https://avatars.githubusercontent.com/u/98018715?v=4",
+      "followers": [
+        {
+          "id": "1702134492602",
+          "userId": "2"
+        }
+      ],
+      "followings": [],
+      "requests": [],
+      "posts": [],
+      "stories": [],
+      "isVerified": false,
+      "isPublic": true,
+      "isAdmin": false,
+      "id": "7",
+      "confirmPassword": "Test123!"
+    }
+  ]

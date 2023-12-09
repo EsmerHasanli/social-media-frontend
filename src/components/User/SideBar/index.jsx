@@ -38,7 +38,6 @@ const SideBar = () => {
   const handleOpen = () => setOpen(true);
   const handleClose = () => setOpen(false);
   const { user, setUser } = useContext(UserContext);
-  const [users, setUsers] = useState([]);
   const dispatch = useDispatch();
   const navigate = useNavigate();
   const location = useLocation();
@@ -170,8 +169,8 @@ const SideBar = () => {
                 marginTop: "20px",
               }}
             >
-              <Link
-                to="/user"
+              <Link 
+                to="/followers"
                 style={{
                   display: "flex",
                   alignItems: "center",
@@ -186,7 +185,7 @@ const SideBar = () => {
               <li style={{ fontSize: "40px", fontWeight: "lighter" }}>|</li>
 
               <Link
-                to="/user"
+                to="/followings"
                 style={{
                   display: "flex",
                   alignItems: "center",

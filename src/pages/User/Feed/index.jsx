@@ -12,9 +12,15 @@ import { Favorite } from "@mui/icons-material";
 import SideBar from "../../../components/User/SideBar";
 import { Swiper, SwiperSlide } from "swiper/react";
 import "swiper/css";
+import style from "./index.module.css";
 import "swiper/css/navigation";
 import { Navigation } from "swiper/modules";
 import ModeCommentIcon from "@mui/icons-material/ModeComment";
+import IconButton from "@mui/material/IconButton";
+import Stack from "@mui/material/Stack";
+import DeleteIcon from "@mui/icons-material/Delete";
+import Comments from "../../../components/User/Comments";
+//import LikePost from "../../../components/User/LikePost";
 const Item = styled(Paper)(({ theme }) => ({
   padding: "10px",
   color: theme.palette.text.secondary,
@@ -30,6 +36,7 @@ const Feed = () => {
   const [searchQuery, setSearchQuery] = useState("");
   const [followings, setFollowings] = useState([]);
   const [likedPosts, setLikedPosts] = useState([]);
+  const [isPostLiked, setIsPostLiked] = useState(false);
 
   useEffect(() => {
     if (user === null) {
@@ -44,16 +51,19 @@ const Feed = () => {
   }, []);
 
   useEffect(() => {
+    if (searchQuery === "") {
+      setSearchedUser([]);
+    }
+  }, [searchQuery]);
+
+  useEffect(() => {
     const followingUsersId = user?.followings?.map(
       (following) => following.userId
     );
-    console.log(followingUsersId);
 
     const followingUsers = users.filter((x) => followingUsersId.includes(x.id));
-    console.log(followingUsers);
 
     setFollowings(followingUsers);
-    console.log(followings);
   }, [user, users]);
 
   const handleFollow = async (id) => {
@@ -99,19 +109,46 @@ const Feed = () => {
     }
   };
 
-  const handleLike = (postId) => {
-    if (likedPosts.includes(postId)) {
+  const handleLike = async (postId) => {
+    const postAuthor = users.find(
+      (user) => user.posts && user.posts.find((p) => p.id === postId)
+    );
+
+    //const currentPost = postAuthor.posts.find((post) => post.id === postId);
+    let currentPost;
+
+    for (let i = 0; i < postAuthor.posts.length; i++) {
+      const post = postAuthor.posts[i];
+
+      if (post.id === postId) {
+        currentPost = post;
+        break;
+      }
+    }
+
+    console.log(currentPost);
+
+    const isAlreadyLiked = likedPosts.includes(postId);
+
+    if (!isAlreadyLiked) {
+
+      setLikedPosts((prevLikedPosts) => [...prevLikedPosts, postId]);
+      if (currentPost) {
+        currentPost.likes.push(user.id);
+       }
+      const updatedUser = await putUser(postAuthor.id, postAuthor);
+    } 
+    
+    else {
+
       setLikedPosts((prevLikedPosts) =>
         prevLikedPosts.filter((id) => id !== postId)
       );
-    } else {
-      setLikedPosts((prevLikedPosts) => [...prevLikedPosts, postId]);
+      
+      postAuthor.posts.likes.remove(user.id);
+      const updatedPost = await putUser(postAuthor.id, postAuthor);
     }
-  };
-
-  const isPostLiked = (postId) => {
-    return likedPosts.includes(postId);
-  };
+  }
 
   return (
     <>
@@ -163,12 +200,13 @@ const Feed = () => {
                   // }}
                   //onBlur={() => setSearchedUser([])}
                   onChange={(e) => {
-                    setSearchQuery(e.target.value.toLowerCase());
-
-                    const filteredUsers = users.filter((obj) =>
-                      obj.username.includes(searchQuery)
+                    setSearchQuery(e.target.value);
+                    const filteredUsers = users.filter(
+                      (obj) =>
+                        obj.username.includes(e.target.value.toLowerCase()) &&
+                        obj.username !== user.username &&
+                        obj.username !== "admin"
                     );
-
                     setSearchedUser(filteredUsers);
                   }}
                   autoComplete="off"
@@ -187,52 +225,41 @@ const Feed = () => {
                     zIndex: 3,
                   }}
                 >
-                  {searchQuery &&
-                    searchedUser &&
-                    searchedUser.map((x) =>
-                      x.username !== user.username && x.username !== "admin" ? (
-                        <li
-                          key={x.id}
+                  {searchedUser &&
+                    searchedUser.map((x) => (
+                      <li
+                        key={x.id}
+                        style={{
+                          display: "flex",
+                          justifyContent: "space-between",
+                          alignItems: "center",
+                          padding: "5px 10px ",
+                          cursor: "pointer",
+                          backgroundColor: "white",
+                        }}
+                      >
+                        <Link
+                          to={`/users/${x.id}`}
                           style={{
                             display: "flex",
-                            justifyContent: "space-between",
                             alignItems: "center",
-                            padding: "5px 10px ",
-                            cursor: "pointer",
-                            backgroundColor: "white",
-                          }}
-                          onClick={(e) => {
-                            // e.stopPropagation();
-                            // console.log(x.id);
-                            // x.requests.push({
-                            //   userId: x.id,
-                            //   id: Date.now().toString(),
-                            // });
-                            // setSearchedUser([]);
+                            gap: "10px",
                           }}
                         >
-                          <Link  to={`/users/${x.id}`}
-                            style={{
-                              display: "flex",
-                              alignItems: "center",
-                              gap: "10px",
-                            }}
-                          >
-                            <Avatar src={x.profilePicture} />
-                            {x.username}
-                          </Link>
+                          <Avatar src={x.profilePicture} />
+                          {x.username}
+                        </Link>
 
-                          <Button
-                            data-id={x.id}
-                            onClick={(e) => {
-                              handleFollow(e.target.getAttribute("data-id"));
-                            }}
-                          >
-                            follow
-                          </Button>
-                        </li>
-                      ) : null
-                    )}
+                        <Button
+                          data-id={x.id}
+                          onClick={(e) => {
+                            handleFollow(e.target.getAttribute("data-id"));
+                          }}
+                        >
+                          follow
+                        </Button>
+                      </li>
+                    ))}
                 </ul>
               </div>
 
@@ -250,23 +277,11 @@ const Feed = () => {
                 </Typography>
 
                 <Swiper
-                  //navigation={true}
-                  modules={[Navigation]}
-                  className="mySwiper"
-                  style={{
-                    display: "flex",
-                    justifyContent: "flex-start",
-                    alignItems: "center",
-                    gap: "15px",
-                  }}
+                //navigation={true}
+                //modules={[Navigation]}
+                //className="mySwiper"
                 >
-                  <SwiperSlide
-                    style={{
-                      width: "100px",
-                      height: "100px",
-                      position: "relative",
-                    }}
-                  >
+                  <SwiperSlide className={style.SwiperSlide}>
                     {" "}
                     <Avatar
                       style={{
@@ -296,13 +311,58 @@ const Feed = () => {
                     </div>
                   </SwiperSlide>
 
-                  <SwiperSlide
-                    style={{
-                      width: "100px",
-                      height: "100px",
-                      position: "relative",
-                    }}
-                  >
+                  <SwiperSlide className={style.SwiperSlide}>
+                    <Avatar
+                      style={{
+                        height: "70px",
+                        width: "70px",
+                        marginBottom: "10px",
+                      }}
+                      src="https://cdn.logojoy.com/wp-content/uploads/20220329171603/dating-app-logo-example.jpg"
+                    />
+                  </SwiperSlide>
+
+                  <SwiperSlide className={style.SwiperSlide}>
+                    <Avatar
+                      style={{
+                        height: "70px",
+                        width: "70px",
+                        marginBottom: "10px",
+                      }}
+                      src="https://cdn.logojoy.com/wp-content/uploads/20220329171603/dating-app-logo-example.jpg"
+                    />
+                  </SwiperSlide>
+                  <SwiperSlide className={style.SwiperSlide}>
+                    <Avatar
+                      style={{
+                        height: "70px",
+                        width: "70px",
+                        marginBottom: "10px",
+                      }}
+                      src="https://cdn.logojoy.com/wp-content/uploads/20220329171603/dating-app-logo-example.jpg"
+                    />
+                  </SwiperSlide>
+                  <SwiperSlide className={style.SwiperSlide}>
+                    <Avatar
+                      style={{
+                        height: "70px",
+                        width: "70px",
+                        marginBottom: "10px",
+                      }}
+                      src="https://cdn.logojoy.com/wp-content/uploads/20220329171603/dating-app-logo-example.jpg"
+                    />
+                  </SwiperSlide>
+                  <SwiperSlide className={style.SwiperSlide}>
+                    <Avatar
+                      style={{
+                        height: "70px",
+                        width: "70px",
+                        marginBottom: "10px",
+                      }}
+                      src="https://cdn.logojoy.com/wp-content/uploads/20220329171603/dating-app-logo-example.jpg"
+                    />
+                  </SwiperSlide>
+                  <SwiperSlide className={style.SwiperSlide}>
                     <Avatar
                       style={{
                         height: "70px",
@@ -410,6 +470,7 @@ const Feed = () => {
                                           gap: "10px",
                                         }}
                                       >
+                                        {/* <LikePost post={post}/> */}
                                         <article
                                           style={{
                                             display: "flex",
@@ -423,21 +484,20 @@ const Feed = () => {
                                           >
                                             {post.likes.length}
                                           </span>
-                                          <Favorite
-                                            style={{
-                                              fill: isPostLiked(post.id)
-                                                ? "rgb(119,5,23)"
-                                                : "black",
-                                            }}
-                                            data-id={post.id}
-                                            onClick={(e) =>
-                                              handleLike(
-                                                e.target.getAttribute("data-id")
-                                              )
-                                            }
-                                          />
+                                          <IconButton
+                                        
+                                            onClick={(e) => handleLike(post.id)}
+                                          >
+                                            <Favorite
+                                               style={{
+                                                fill: likedPosts.includes(post.id)
+                                                  ? "red"
+                                                  : "black",
+                                              }}
+                                            />
+                                          </IconButton>
                                         </article>
-                                        <article
+                                        {/* <article
                                           style={{
                                             display: "flex",
                                             alignItems: "center",
@@ -452,9 +512,10 @@ const Feed = () => {
                                           </span>
                                           <ModeCommentIcon
                                             data-id={post.id}
-                                            //onClick={(e) => handleAddComment(e.target.getAttribute("data-id"))}
+                                            //onClick={handleAddComment}
                                           />
-                                        </article>
+                                        </article> */}
+                                        <Comments post={post} postId={post.id}/>
                                       </div>
                                     </div>
                                   </div>

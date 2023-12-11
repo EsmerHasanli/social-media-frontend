@@ -26,9 +26,14 @@ const UserProfile = () => {
   let [searchedUser, setSearchedUser] = useState({});
 
   useEffect(() => {
-    getUserByID(id).then((response) => {
-      setSearchedUser(response);
-    });
+    getUserByID(id)
+      .then((response) => {
+        console.log("response:", response);
+        setSearchedUser(response);
+      })
+      .catch((error) => {
+        console.error("error:", error);
+      });
   }, [id]);
 
   useEffect(() => {
@@ -72,7 +77,7 @@ const UserProfile = () => {
               >
                 <div style={{ display: "flex", gap: "70px" }}>
                   <Avatar
-                    src={searchedUser.profilePicture}
+                    src={searchedUser.profile}
                     style={{ width: "150px", height: "150px" }}
                   />
 

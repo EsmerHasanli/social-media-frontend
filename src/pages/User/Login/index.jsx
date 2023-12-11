@@ -50,7 +50,7 @@ const Login = () => {
     fetchData();
 
     if (localStorage.getItem("user")) {
-      navigate("feed");
+      navigate("/feed");
     }
   }, []);
 

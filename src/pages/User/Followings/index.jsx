@@ -8,7 +8,7 @@ import { createTheme, ThemeProvider } from "@mui/material/styles";
 import { Link, useNavigate } from "react-router-dom";
 import SideBar from "../../../components/User/SideBar";
 import { Avatar, Button, Typography, styled } from "@mui/material";
-import { getAllUsers, putUser } from "../../../services/api/users";
+import { getAllUsers, getUserByID, putUser } from "../../../services/api/users";
 
 const Item = styled(Paper)(({ theme }) => ({
   padding: "10px",
@@ -22,6 +22,19 @@ const Followings = () => {
   const { user, setUser } = useContext(UserContext);
   const [users, setUsers] = useState([]);
   const [followings, setFollowings] = useState([]);
+  const [followedUsers, setFollowedUsers] = useState([])
+
+  const getUsers = () => {
+    const usersDB = []
+    if (followings) {
+      followings.map(async item => {
+        const userFromDb = await getUserByID(item.userId)
+        setFollowedUsers([...followedUsers, userFromDb])
+      })
+  
+    }
+  }
+
 
   useEffect(() => {
     if (user === null) {
@@ -35,30 +48,29 @@ const Followings = () => {
     fetchData();
   }, []);
 
+
   useEffect(() => {
-    const followingUsersId = user?.followings?.map(
-      (following) => following.userId
-    );
-    console.log(followingUsersId);
+   setFollowings(user.followings)
+   const followingUsersId = user?.followings?.map(
+    (following) => following.userId
+  );
 
-    const followingUsers = users.filter((x) => followingUsersId.includes(x.id));
-    console.log(followingUsers);
+  const followingUsers = users.filter((x) => followingUsersId.includes(x.id));
+   setFollowedUsers(followingUsers)
 
-    setFollowings(followingUsers);
-    console.log(followings);
-  }, [user, users]);
+  }, [user]);
 
   const handleUnfollow = async (id) => {
     const updatedFollowings = followings.filter(
-      (followingUser) => followingUser.id !== id
+      (followingUser) => followingUser.userId !== id
     );
     setFollowings(updatedFollowings);
 
-    console.log(updatedFollowings);
 
     const followingsArray = [];
 
     for (let i = 0; i < updatedFollowings.length; i++) {
+
       followingsArray.push({
         id: updatedFollowings[i].id,
         userId: updatedFollowings[i].userId,
@@ -128,8 +140,8 @@ const Followings = () => {
 
               <section>
                 <ul>
-                  {followings &&
-                    followings.map((followingUser) => (
+                  {followedUsers &&
+                    followedUsers.map((followingUser) => (
                       <li
                         key={followingUser.id}
                         style={{

@@ -53,7 +53,6 @@ const UserPage = () => {
       }));
 
       await putUser(user.id, { posts: [...user.posts, newPost] });
-      console.log(user.posts);
 
       formik.resetForm();
     },

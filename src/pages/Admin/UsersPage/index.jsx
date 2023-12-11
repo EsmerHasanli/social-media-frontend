@@ -1,8 +1,9 @@
 import React, { useContext, useEffect, useState } from "react";
 import { UserContext } from "../../../services/context/UserContext";
 import { useNavigate } from "react-router-dom";
-import { getAllUsers } from "../../../services/api/users";
+import { getAllUsers, deleteUser } from "../../../services/api/users"; 
 import {
+  Button,
   Container,
   CssBaseline,
   ThemeProvider,
@@ -22,9 +23,13 @@ const UsersPage = () => {
   const [users, setUsers] = useState([]);
   const navigate = useNavigate();
   const { user } = useContext(UserContext);
+
   useEffect(() => {
     if (user === null) {
       navigate("/admin");
+    }
+    if (user.email !== 'admin@gmail.com') {
+      navigate('/feed');
     }
     async function fetchData() {
       const fetchedUsers = await getAllUsers();
@@ -32,11 +37,24 @@ const UsersPage = () => {
     }
     fetchData();
   }, []);
+
   const darkTheme = createTheme({
     palette: {
       mode: "dark",
     },
   });
+
+  const handleDeleteUser = async (userId) => {
+    try {
+      // Call the deleteUser function from your API
+      await deleteUser(userId);
+
+      // Update the state to reflect the deletion
+      setUsers((prevUsers) => prevUsers.filter((user) => user.id !== userId));
+    } catch (error) {
+      console.error("Error deleting user:", error);
+    }
+  };
 
   return (
     <ThemeProvider theme={darkTheme}>
@@ -45,38 +63,38 @@ const UsersPage = () => {
         <div style={{ height: "100vh" }}>
           <h1 style={{ textAlign: "center", marginTop: "20px" }}>Users</h1>
 
-          <div style={{
-            marginTop: "40px",
-            display:'flex',
-            justifyContent: 'center',
-            alignItems:'center',
-            gap:"20px",
-            flexWrap: 'wrap',
-          }}>
+          <div
+            style={{
+              marginTop: "40px",
+              display: "flex",
+              justifyContent: "center",
+              alignItems: "center",
+              gap: "20px",
+              flexWrap: "wrap",
+            }}
+          >
             {users &&
               users.map((objectUser) => (
-                <Card key={objectUser.id} sx={{ maxWidth: 345 }}>
-                  <CardHeader
-                    avatar={
-                      <Avatar alt={objectUser.name} src={objectUser.avatar} />
-                    }
-                    title={objectUser.username}
-                    subheader={objectUser.email}
-                  />
-                  <CardMedia
-                    component="img"
-                    height="194"
-                    image={objectUser.avatar}
-                    alt={objectUser.username}
-                  />
-                  <CardContent>
-                    <Typography variant="body2" color="text.secondary">
-                      This impressive paella is a perfect party dish and a fun
-                      meal to cook together with your guests. Add 1 cup of
-                      frozen peas along with the mussels, if you like.
-                    </Typography>
-                  </CardContent>
-                </Card>
+                objectUser.username !== "admin" && (
+                  <Card key={objectUser.id} sx={{ maxWidth: 345 }}>
+                    <CardHeader
+                      avatar={
+                        <Avatar
+                          alt={objectUser.name}
+                          src={objectUser.avatar}
+                        />
+                      }
+                      title={objectUser.username}
+                      subheader={objectUser.email}
+                    />
+
+                    <CardContent>
+                      <Button onClick={() => handleDeleteUser(objectUser.id)}>
+                        Delete user
+                      </Button>
+                    </CardContent>
+                  </Card>
+                )
               ))}
           </div>
         </div>

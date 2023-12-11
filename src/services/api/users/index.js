@@ -36,3 +36,11 @@ export const putUser = async (id, payload) => {
   });
   return editedUser;
 };
+
+export const deleteUser = async (id) => {
+    let deletedUser;
+    await axios.delete(`${BASE_URL}/users/${id}`).then((response) => {
+      deletedUser = response.data;
+    });
+    return deletedUser; 
+};

@@ -55,7 +55,6 @@ const [users, setUsers] = React.useState([])
       isPublic: true,
     },
     onSubmit: async (values, actions) => {
-      console.log(values);
       try {
         let userExists
 

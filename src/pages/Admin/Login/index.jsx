@@ -89,7 +89,7 @@ const AdminLogin = () => {
                 if (adminUser) {
                   dispatch(sign_in({ email: values.email, password: values.password }));
                   setUser(adminUser);
-                  navigate("dashboard");
+                  navigate("users");
                 } else {
                   Swal.fire({
                     icon: "error",

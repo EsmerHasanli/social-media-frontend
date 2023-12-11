@@ -8,7 +8,7 @@ import {
   Rating,
   TextField,
 } from "@mui/material";
-import { getAllUsers, putUser } from "../../../services/api/users";
+import { getAllUsers, getUserByID, putUser } from "../../../services/api/users";
 import ModeCommentIcon from "@mui/icons-material/ModeComment";
 import { UserContext } from "../../../services/context/UserContext";
 import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
@@ -19,7 +19,8 @@ import { current } from "@reduxjs/toolkit";
 const Comments = ({ post, postId }) => {
   const { user, setUser } = useContext(UserContext);
   const [users, setUsers] = useState([]);
-
+  const [userPost, setUserPost] = useState(post)
+  const [postCommentsCount, setPostCommentsCount] = useState(post.comments.length) 
   const [open, setOpen] = useState(false);
   const [showComments, setShowComments] = useState(false);
   const [comment, setComment] = useState("");
@@ -39,33 +40,29 @@ const Comments = ({ post, postId }) => {
     fetchData();
   }, []);
 
-  let currentPost;
   const handleSubmit = async (values, { setSubmitting, resetForm }) => {
     try {
 
       const postAuthor = users.find(
         (user) => user.posts && user.posts.find((p) => p.id === postId)
       );
-
-      for (let i = 0; i < postAuthor.posts.length; i++) {
-        const post = postAuthor.posts[i];
-        if (post.id === postId) {
-          currentPost = post;
-          break;
-        }
-      }
-      console.log(currentPost);
-
       const newComment = {
         id: Date.now().toString(),
         userId: user.id,
-        commment: values,
+        image: user.profilePicture,
+        comment: values.comment,
       };
+      const currentPost = postAuthor.posts.find(p => p.id == postId)
+      currentPost.comments.push(newComment);
+      await putUser(postAuthor.id, postAuthor);
+      const updatedAuthor = await getUserByID(postAuthor.id)
+      const updatedPost = updatedAuthor.posts.find(p => p.id == postId)
 
-      const updatedComments = currentPost.comments.push(newComment);
-
-      const updatedUser = await putUser(postAuthor.id, postAuthor);
-      console.log(updatedUser);
+      setPostCommentsCount(updatedPost.comments.length)
+      
+      setUserPost(updatedPost)
+      
+      
     } catch (error) {
       console.error(error);
     } finally {
@@ -105,7 +102,7 @@ const Comments = ({ post, postId }) => {
             fontWeight: "bolder",
           }}
         >
-          {post.comments.length}
+          {postCommentsCount}
         </span>
         <ModeCommentIcon data-id={post.id} onClick={handleAddComment} />
       </article>
@@ -171,19 +168,22 @@ const Comments = ({ post, postId }) => {
               <ul
                 style={{
                   marginTop: "10px",
-                  height: currentPost?.comments ? '200px' : 'auto',
-                  overflowY: currentPost?.comments ? 'scroll' : 'hidden',
+                  height: userPost?.comments ? '200px' : 'auto',
+                  overflowY: userPost?.comments ? 'scroll' : 'hidden',
                 }}
               >
-                { currentPost?.comments ? currentPost?.comments.map((c) => (
-                  <li
-                    key={c.id}
-                    style={{ display: "flex", gap: "10px", margin: "10px 0" }}
-                  >
-                    <Avatar />
-                    <span>{c.commment}</span>
-                  </li>
-                )) : <li>no comments yet</li>}
+                { userPost?.comments.length
+                
+                  ? userPost?.comments.map((c) => (
+                    <li
+                      key={c.id}
+                      style={{ display: "flex", gap: "10px", margin: "10px 0" }}
+                    >
+                      <Avatar src={c.image} />
+                      <span>{c.comment}</span>
+                    </li>
+                  ))
+                  : <li>no comments yet</li>}
               </ul>
             )}
           </div>

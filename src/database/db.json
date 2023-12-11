@@ -287,7 +287,7 @@
     "posts": [
       {
         "id": "1702208695112",
-        "imageLink": "https://images.pexels.com/photos/19248756/pexels-photo-19248756/free-photo-of-a-woman-in-jeans-and-a-tank-top-leaning-against-a-tree.jpeg?auto=compress&cs=tinysrgb&w=600&lazy=load",
+        "imageLink": "https://images.pexels.com/photos/17747894/pexels-photo-17747894/free-photo-of-a-book-with-a-photo-of-a-ballerina-and-flowers.jpeg?auto=compress&cs=tinysrgb&w=600&lazy=load",
         "messageText": "",
         "likes": [],
         "comments": []
@@ -306,24 +306,6 @@
     "isAdmin": false,
     "id": "6",
     "confirmPassword": "Ayshen123!"
-  },
-  {
-    "username": "gurbangurbanzade",
-    "fullName": "Gurban Gurbanzada",
-    "email": "gurban.gurbanzadeh@gmail.com",
-    "password": "Test123!",
-    "bio": "",
-    "profilePicture": "https://avatars.githubusercontent.com/u/98018715?v=4",
-    "followers": [],
-    "followings": [],
-    "requests": [],
-    "posts": [],
-    "stories": [],
-    "isVerified": false,
-    "isPublic": true,
-    "isAdmin": false,
-    "id": "7",
-    "confirmPassword": "Test123!"
   },
   {
     "username": "nazrinh",
